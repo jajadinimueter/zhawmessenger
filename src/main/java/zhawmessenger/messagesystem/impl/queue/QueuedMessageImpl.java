@@ -1,6 +1,6 @@
 package zhawmessenger.messagesystem.impl.queue;
 
-import zhawmessenger.messagesystem.api.Message;
+import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 import zhawmessenger.messagesystem.util.DefaultTimeProvider;
 import zhawmessenger.messagesystem.util.TimeProvider;

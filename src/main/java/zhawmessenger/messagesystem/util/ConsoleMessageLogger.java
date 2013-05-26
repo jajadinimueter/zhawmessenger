@@ -1,7 +1,7 @@
 package zhawmessenger.messagesystem.util;
 
-import zhawmessenger.messagesystem.api.Message;
-import zhawmessenger.messagesystem.api.MessageLogger;
+import zhawmessenger.messagesystem.api.message.Message;
+import zhawmessenger.messagesystem.api.util.MessageLogger;
 import zhawmessenger.messagesystem.api.transport.SentMessage;
 
 import java.util.Date;

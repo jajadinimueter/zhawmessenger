@@ -1,9 +1,6 @@
 package zhawmessenger.messagesystem.api.queue;
 
-import ca.odell.glazedlists.EventList;
-import zhawmessenger.messagesystem.api.Message;
-
-import java.util.Date;
+import zhawmessenger.messagesystem.api.message.Message;
 
 /**
  */

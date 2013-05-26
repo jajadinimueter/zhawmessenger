@@ -3,7 +3,7 @@ package zhawmessenger.messagesystem.impl.queue;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import zhawmessenger.messagesystem.api.Message;
+import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.queue.MessageQueue;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 import zhawmessenger.messagesystem.api.transport.Transport;

@@ -16,7 +16,7 @@ public class EmailCreateFormFactory
         extends AbstractCreateForm<Email> {
 
     @Override
-    public JPanel createForm(Email message) {
+    public JPanel createForm(final Email message) {
         // build the actual form
         JPanel formPanel;
         JButton testButton;
@@ -31,16 +31,13 @@ public class EmailCreateFormFactory
             @Override
             public void actionPerformed(ActionEvent e) {
                 for (SaveListener listener : saveListeners) {
-                    listener.saved(new EmailImpl());
+                    listener.saved(message);
                 }
             }
         });
 
         formPanel.add(testButton);
-        return formPanel;    }
-
-    @Override
-    public JPanel createForm() {
-        return this.createForm(null);
+        return formPanel;
     }
+
 }

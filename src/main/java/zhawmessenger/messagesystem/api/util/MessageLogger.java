@@ -1,5 +1,6 @@
-package zhawmessenger.messagesystem.api;
+package zhawmessenger.messagesystem.api.util;
 
+import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.transport.SentMessage;
 
 import java.util.Date;

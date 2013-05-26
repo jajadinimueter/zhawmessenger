@@ -1,6 +1,6 @@
 package zhawmessenger.messagesystem.api.transport;
 
-import zhawmessenger.messagesystem.api.Message;
+import zhawmessenger.messagesystem.api.message.Message;
 
 import java.util.Date;
 

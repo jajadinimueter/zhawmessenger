@@ -1,7 +1,7 @@
 package zhawmessenger.messagesystem.api.queue;
 
 import ca.odell.glazedlists.EventList;
-import zhawmessenger.messagesystem.api.Message;
+import zhawmessenger.messagesystem.api.message.Message;
 
 /**
  */

@@ -1,9 +1,6 @@
 package zhawmessenger.ui.api.action;
 
 
-import zhawmessenger.messagesystem.api.Message;
-import zhawmessenger.ui.api.CreateFormFactory;
-
 import javax.swing.*;
 
 /**
