@@ -6,10 +6,12 @@ import ca.odell.glazedlists.swing.AdvancedTableModel;
 import ca.odell.glazedlists.swing.GlazedListsSwing;
 import ca.odell.glazedlists.swing.TableComparatorChooser;
 import zhawmessenger.messagesystem.api.message.Message;
+import zhawmessenger.messagesystem.api.message.MessageFactory;
 import zhawmessenger.messagesystem.api.util.MessageLogger;
 import zhawmessenger.messagesystem.api.queue.MessageQueue;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 import zhawmessenger.messagesystem.api.transport.Transport;
+import zhawmessenger.messagesystem.impl.message.DefaultMessageFactory;
 import zhawmessenger.messagesystem.impl.queue.MessageQueueImpl;
 import zhawmessenger.messagesystem.impl.transport.EmailTransport;
 import zhawmessenger.messagesystem.util.ConsoleMessageLogger;
@@ -33,9 +35,12 @@ public class ZhawMessengerUi {
 
     private final List<MessagePlugin> messagePlugins;
     private final MessageQueue messageQueue;
+    private final MessageFactory messageFactory;
 
     public ZhawMessengerUi(List<MessagePlugin> messagePlugins,
-                           MessageQueue messageQueue) {
+                           MessageQueue messageQueue,
+                           MessageFactory messageFactory) {
+        this.messageFactory = messageFactory;
         this.messagePlugins = messagePlugins;
         this.messageQueue = messageQueue;
     }
@@ -106,7 +111,8 @@ public class ZhawMessengerUi {
         createMessageMenu = new JMenu("Nachricht erstellen");
 
         for (final MessagePlugin mp : messagePlugins) {
-            AbstractManipluateAction a = new AbstractCreateAction(frame, mp.getName()) {
+            AbstractManipluateAction a = new AbstractCreateAction(frame, mp.getName(),
+                    mp.getMessageClass(), messageFactory) {
                 @Override
                 protected MessageFormFactory getForm() {
                     return mp.getFormFactory();
@@ -165,6 +171,7 @@ public class ZhawMessengerUi {
 
     public static void main(String[] args) {
         MessageLogger messageLogger = new ConsoleMessageLogger();
+        MessageFactory messageFactory = new DefaultMessageFactory();
 
         List<MessagePlugin> plugins =
                 new ArrayList<MessagePlugin>();
@@ -175,7 +182,8 @@ public class ZhawMessengerUi {
 
         MessageQueue queue = new MessageQueueImpl(transports);
 
-        final ZhawMessengerUi messengerUi = new ZhawMessengerUi(plugins, queue);
+        final ZhawMessengerUi messengerUi = new ZhawMessengerUi(plugins, queue,
+                messageFactory);
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

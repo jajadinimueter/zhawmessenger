@@ -10,6 +10,8 @@ public interface MessagePlugin<T extends Message> {
 
     boolean doesHandle(Class<? extends Message> messageClass);
 
+    Class<? extends Message> getMessageClass();
+
     String getName();
 
     Icon getIcon();
