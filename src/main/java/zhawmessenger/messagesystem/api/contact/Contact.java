@@ -7,7 +7,7 @@ public interface Contact {
 
     String getValue();
 
-    void validate();
+    void validate() throws ContactValidationException;
 
     boolean isValid();
 }

@@ -1,9 +1,10 @@
 package zhawmessenger.messagesystem.impl.message;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import zhawmessenger.messagesystem.api.message.Email;
+import zhawmessenger.messagesystem.api.modules.email.message.Email;
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.message.MessageFactory;
+import zhawmessenger.messagesystem.impl.modules.email.message.EmailImpl;
 
 /**
  */

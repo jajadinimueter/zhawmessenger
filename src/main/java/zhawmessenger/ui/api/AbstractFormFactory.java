@@ -7,13 +7,13 @@ import java.util.List;
 
 /**
  */
-public abstract class AbstractCreateForm<M extends Message>
-        implements CreateFormFactory<M> {
+public abstract class AbstractFormFactory<M extends Message>
+        implements MessageFormFactory<M> {
 
     protected List<SaveListener> saveListeners;
     protected List<CancelListener> cancelListeners;
 
-    public AbstractCreateForm() {
+    public AbstractFormFactory() {
         saveListeners = new ArrayList<SaveListener>();
         cancelListeners = new ArrayList<CancelListener>();
     }

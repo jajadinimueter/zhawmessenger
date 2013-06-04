@@ -7,19 +7,16 @@ import ca.odell.glazedlists.swing.GlazedListsSwing;
 import ca.odell.glazedlists.swing.TableComparatorChooser;
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.message.MessageFactory;
-import zhawmessenger.messagesystem.api.util.MessageLogger;
 import zhawmessenger.messagesystem.api.queue.MessageQueue;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 import zhawmessenger.messagesystem.api.transport.Transport;
 import zhawmessenger.messagesystem.impl.message.DefaultMessageFactory;
+import zhawmessenger.messagesystem.impl.modules.email.transport.EmailTransportImpl;
 import zhawmessenger.messagesystem.impl.queue.MessageQueueImpl;
-import zhawmessenger.messagesystem.impl.transport.EmailTransport;
-import zhawmessenger.messagesystem.util.ConsoleMessageLogger;
-import zhawmessenger.ui.api.MessageFormFactory;
-import zhawmessenger.ui.api.MessagePlugin;
-import zhawmessenger.ui.api.SaveListener;
+import zhawmessenger.ui.api.*;
 import zhawmessenger.ui.api.action.AbstractCreateAction;
 import zhawmessenger.ui.api.action.AbstractManipluateAction;
+import zhawmessenger.ui.impl.components.JConsolePanel;
 import zhawmessenger.ui.impl.modules.email.EmailMessagePlugin;
 
 import javax.swing.*;
@@ -36,17 +33,20 @@ public class ZhawMessengerUi {
     private final List<MessagePlugin> messagePlugins;
     private final MessageQueue messageQueue;
     private final MessageFactory messageFactory;
+    private final MessageWindowFactory messageWindowFactory;
 
     public ZhawMessengerUi(List<MessagePlugin> messagePlugins,
                            MessageQueue messageQueue,
-                           MessageFactory messageFactory) {
+                           MessageFactory messageFactory,
+                           MessageWindowFactory messageWindowFactory) {
         this.messageFactory = messageFactory;
         this.messagePlugins = messagePlugins;
         this.messageQueue = messageQueue;
+        this.messageWindowFactory = messageWindowFactory;
     }
 
-    public void display() {
-        JFrame frame = new JFrame("ZHAW Messenger");
+    public JFrame createUi() {
+        final JFrame frame = new JFrame("ZHAW Messenger");
 
         final JMenuBar mainMenuBar;
         final JMenu fileMenu, createMessageMenu;
@@ -56,12 +56,12 @@ public class ZhawMessengerUi {
         final JToolBar mainToolbar;
 
         final EventList<QueuedMessage> queuedMessages = messageQueue.getQueuedMessages();
-
-        try {
-            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-        } catch (Exception e) {
-            System.out.println("Unable to set native look and feel: " + e);
-        }
+//
+//        try {
+//            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
+//        } catch (Exception e) {
+//            System.out.println("Unable to set native look and feel: " + e);
+//        }
 
         // lock while creating the transformed models
         queuedMessages.getReadWriteLock().readLock().lock();
@@ -121,7 +121,9 @@ public class ZhawMessengerUi {
             a.addSaveListener(new SaveListener() {
                 @Override
                 public void saved(Message message) {
-                    messageQueue.add(message);
+                    if (!messageQueue.contains(message)) {
+                        messageQueue.add(message);
+                    }
                 }
             });
             createMessageMenu.add(a);
@@ -146,15 +148,33 @@ public class ZhawMessengerUi {
                         if (mp.doesHandle(message.getMessage().getClass())) {
                             // we can suppress, because plugin did
                             // confirm it can handle the message
+                            Window win = messageWindowFactory.createWindow(frame, 500, 600);
                             //noinspection unchecked
-                            System.out.println("Edit is called!!");
+                            win.add(mp.getFormFactory().createForm(message.getMessage()),
+                                    BorderLayout.CENTER);
+
+                            win.setVisible(true);
                         }
                     }
                 }
             }
         });
 
+        final JButton sendNowButton = new JButton("Sofort versenden");
+        sendNowButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selCol = messageTable.getSelectedColumn();
+                if (selCol >= 0) {
+                    QueuedMessage message =
+                            queuedMessages.get(selCol);
+                    messageQueue.send(message);
+                }
+            }
+        });
+
         mainToolbar.add(editButton);
+        mainToolbar.add(sendNowButton);
 
         mainPanel.add(mainToolbar, BorderLayout.NORTH);
 
@@ -166,28 +186,37 @@ public class ZhawMessengerUi {
         frame.setSize(540, 380);
         frame.getContentPane().add(mainPanel);
         frame.setJMenuBar(mainMenuBar);
-        frame.setVisible(true);
+
+        return frame;
     }
 
     public static void main(String[] args) {
-        MessageLogger messageLogger = new ConsoleMessageLogger();
+        final JConsolePanel consolePanel = new JConsolePanel();
+
+//        SentMessageLogger messageLogger = new ConsoleSentMessageLogger();
         MessageFactory messageFactory = new DefaultMessageFactory();
 
         List<MessagePlugin> plugins =
                 new ArrayList<MessagePlugin>();
-        plugins.add(new EmailMessagePlugin());
+
+        MessagePlugin emailMessagePlugin = new EmailMessagePlugin();
+
+        plugins.add(emailMessagePlugin);
 
         List<Transport> transports = new ArrayList<Transport>();
-        transports.add(new EmailTransport(messageLogger));
+        transports.add(new EmailTransportImpl(consolePanel));
 
         MessageQueue queue = new MessageQueueImpl(transports);
 
         final ZhawMessengerUi messengerUi = new ZhawMessengerUi(plugins, queue,
-                messageFactory);
+                messageFactory, new DefaultMessageWindowFactory());
+
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                messengerUi.display();
+                JFrame frame = messengerUi.createUi();
+                frame.add(consolePanel, BorderLayout.SOUTH);
+                frame.setVisible(true);
             }
         });
     }

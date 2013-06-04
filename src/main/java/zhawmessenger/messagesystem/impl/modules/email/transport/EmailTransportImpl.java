@@ -1,37 +1,36 @@
-package zhawmessenger.messagesystem.impl.transport;
+package zhawmessenger.messagesystem.impl.modules.email.transport;
 
 import zhawmessenger.messagesystem.api.message.Message;
-import zhawmessenger.messagesystem.api.util.MessageLogger;
-import zhawmessenger.messagesystem.api.message.Email;
+import zhawmessenger.messagesystem.api.modules.email.transport.EmailTransport;
+import zhawmessenger.messagesystem.api.util.SentMessageLogger;
+import zhawmessenger.messagesystem.api.modules.email.message.Email;
 import zhawmessenger.messagesystem.api.transport.SentMessage;
-import zhawmessenger.messagesystem.api.transport.Transport;
 import zhawmessenger.messagesystem.api.transport.TransportException;
-import zhawmessenger.ui.impl.modules.email.EmailMessagePlugin;
 
-import javax.activation.MailcapCommandMap;
 import java.util.Date;
 
 /**
  */
-public class EmailTransport implements Transport<Email> {
+public class EmailTransportImpl implements EmailTransport {
 
-    private MessageLogger logger;
+    private SentMessageLogger logger;
 
-    public EmailTransport(MessageLogger logger) {
+    public EmailTransportImpl(SentMessageLogger logger) {
         this.logger = logger;
     }
 
     @Override
+
     public boolean canSend(Class<? extends Message> messageClass) {
         return Email.class.isAssignableFrom(messageClass);
     }
 
     @Override
-    public SentMessage<Email> send(final Email message) throws TransportException {
+    public <T extends Message> SentMessage<T> send(final T message) throws TransportException {
         final Date sentAt = new Date();
-        SentMessage<Email> sm = new SentMessage<Email>() {
+        SentMessage<T> sm = new SentMessage<T>() {
             @Override
-            public Email getMessage() {
+            public T getMessage() {
                 return message;
             }
 

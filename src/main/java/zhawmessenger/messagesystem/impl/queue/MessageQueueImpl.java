@@ -6,6 +6,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.queue.MessageQueue;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
+import zhawmessenger.messagesystem.api.transport.SentMessage;
 import zhawmessenger.messagesystem.api.transport.Transport;
 import zhawmessenger.messagesystem.util.DefaultTimeProvider;
 import zhawmessenger.messagesystem.util.TimeProvider;
@@ -47,33 +48,46 @@ public class MessageQueueImpl implements MessageQueue {
         );
     }
 
-    /**
-     * Delivers all messages which are
-     */
-    public void deliver() {
-        Message message;
-        for (QueuedMessage queuedMessage : messages) {
-            try {
-                if (queuedMessage.tryLock()) {
-                    if (!queuedMessage.isSuspended()) {
-                        message = queuedMessage.getMessage();
-                        if (message.getSendTime() < this.timeProvider.getTime()) {
-                            for (Transport transport : this.transports) {
-                                if (transport.canSend(message.getClass())) {
-                                    // We can suppress this because
-                                    // the transport already told us
-                                    // it can handle this type!
-                                    //noinspection unchecked
-                                    transport.send(message);
-                                }
+    public void send(QueuedMessage message) {
+        this.send(message, false);
+    }
+
+    public SentMessage send(QueuedMessage message, boolean force) {
+        try {
+            if (message.tryLock()) {
+                if (!message.isSuspended()) {
+                    Message msg = message.getMessage();
+                    if (force || msg.getSendTime() < this.timeProvider.getTime()) {
+                        for (Transport transport : this.transports) {
+                            if (transport.canSend(msg.getClass())) {
+                                // We can suppress this because
+                                // the transport already told us
+                                // it can handle this type!
+                                //noinspection unchecked
+                                return transport.send(msg);
                             }
                         }
                     }
                 }
-            } finally {
-                // can be safely released
-                queuedMessage.release();
             }
+        } finally {
+            // can be safely released
+            message.release();
+        }
+
+        throw new RuntimeException("Message cannot be sent");
+    }
+
+    public void sendAll() {
+        this.sendAll(false);
+    }
+
+    /**
+     * Delivers all messages which are
+     */
+    public void sendAll(boolean force) {
+        for (QueuedMessage queuedMessage : messages) {
+            this.send(queuedMessage, force);
         }
     }
 
@@ -99,4 +113,22 @@ public class MessageQueueImpl implements MessageQueue {
         return messages;
     }
 
+    @Override
+    public boolean contains(QueuedMessage message) {
+        return this.messages.contains(message);
+    }
+
+    public boolean contains(Message message) {
+        for (QueuedMessage m : this.messages) {
+            if (m.getMessage().equals(message)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void schedule() {
+        // FIXME
+    }
 }

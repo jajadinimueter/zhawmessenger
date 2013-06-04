@@ -1,6 +1,7 @@
-package zhawmessenger.messagesystem.api.message;
+package zhawmessenger.messagesystem.api.modules.email.message;
 
-import zhawmessenger.messagesystem.api.contact.EmailContact;
+import zhawmessenger.messagesystem.api.message.Message;
+import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
 
 import java.util.List;
 

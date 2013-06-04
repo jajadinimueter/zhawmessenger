@@ -1,15 +1,16 @@
 package zhawmessenger.ui.impl.modules.email;
 
 import zhawmessenger.messagesystem.api.message.Message;
-import zhawmessenger.messagesystem.api.message.Email;
+import zhawmessenger.messagesystem.api.modules.email.message.Email;
 import zhawmessenger.ui.api.*;
 
 import javax.swing.*;
 
 /**
  */
-public class EmailMessagePlugin implements MessagePlugin<Email> {
+public class EmailMessagePlugin implements MessagePlugin {
 
+    @SuppressWarnings("unchecked")
     @Override
     public Class<? extends Message> getMessageClass() {
         return Email.class;
@@ -30,7 +31,11 @@ public class EmailMessagePlugin implements MessagePlugin<Email> {
 
     @Override
     public MessageFormFactory getFormFactory() {
-        return new EmailCreateFormFactory();
+        return new EmailFormFactory();
+    }
+
+    public MessageWindowFactory getWindowFactory() {
+        return new DefaultMessageWindowFactory();
     }
 
 }

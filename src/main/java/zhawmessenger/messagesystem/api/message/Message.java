@@ -1,13 +1,21 @@
 package zhawmessenger.messagesystem.api.message;
 
 import zhawmessenger.messagesystem.api.contact.Contact;
-import zhawmessenger.messagesystem.api.contact.EmailContact;
 
 import java.util.List;
 
 /**
  */
 public interface Message<R extends Contact> {
+
+    /**
+     * Returns an ID with uniqually identifies
+     * this message
+     *
+     * @return an ID
+     */
+    Object getId();
+
     long getSendTime();
 
     void setSendTime(long time);

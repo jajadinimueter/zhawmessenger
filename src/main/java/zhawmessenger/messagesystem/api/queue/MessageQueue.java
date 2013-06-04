@@ -1,16 +1,21 @@
 package zhawmessenger.messagesystem.api.queue;
 
 import ca.odell.glazedlists.EventList;
+import zhawmessenger.messagesystem.api.Schedulable;
 import zhawmessenger.messagesystem.api.message.Message;
+import zhawmessenger.messagesystem.api.transport.SentMessage;
 
 /**
  */
-public interface MessageQueue {
+public interface MessageQueue extends Schedulable {
 
-    /**
-     * Deliver pending messages
-     */
-    void deliver();
+    void send(QueuedMessage message);
+
+    SentMessage send(QueuedMessage message, boolean force);
+
+    void sendAll();
+
+    void sendAll(boolean force);
 
     /**
      * Add a message and receive a queued
@@ -41,5 +46,9 @@ public interface MessageQueue {
 
 
     EventList<QueuedMessage> getQueuedMessages();
+
+    boolean contains(QueuedMessage message);
+
+    boolean contains(Message message);
 
 }

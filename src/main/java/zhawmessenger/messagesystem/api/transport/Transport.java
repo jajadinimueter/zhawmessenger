@@ -4,7 +4,7 @@ import zhawmessenger.messagesystem.api.message.Message;
 
 /**
  */
-public interface Transport<T extends Message> {
+public interface Transport {
 
     /**
      * Test whether this transport is able to
@@ -26,5 +26,5 @@ public interface Transport<T extends Message> {
      *         contains information about the progress
      *         of the sent message.
      */
-    SentMessage<T> send(T message) throws TransportException;
+    <T extends Message> SentMessage<T> send(T message) throws TransportException;
 }

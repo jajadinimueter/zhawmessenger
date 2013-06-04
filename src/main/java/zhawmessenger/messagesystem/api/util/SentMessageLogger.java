@@ -6,8 +6,10 @@ import zhawmessenger.messagesystem.api.transport.SentMessage;
 import java.util.Date;
 
 /**
+ * The SentMessageLogger is used in {@link zhawmessenger.messagesystem.api.transport.Transport}S
+ * to log when {@link Message}S are sent.
  */
-public interface MessageLogger {
+public interface SentMessageLogger {
 
     /**
      * Use this logger when you did send a message.

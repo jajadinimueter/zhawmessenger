@@ -9,13 +9,14 @@ public class MessageTableFormat implements TableFormat<QueuedMessage>{
 
     @Override
     public int getColumnCount() {
-        return 1;
+        return 2;
     }
 
     @Override
     public String getColumnName(int i) {
         switch (i) {
-            case 0: return "Text";
+            case 0: return "ID";
+            case 1: return "Text";
         }
 
         throw new IllegalStateException();
@@ -25,6 +26,8 @@ public class MessageTableFormat implements TableFormat<QueuedMessage>{
     public Object getColumnValue(QueuedMessage queuedMessage, int i) {
         switch (i) {
             case 0:
+                return queuedMessage.getMessage().getId();
+            case 1:
                 return queuedMessage.getMessage().getText();
         }
 

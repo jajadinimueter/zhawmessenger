@@ -1,13 +1,13 @@
-package zhawmessenger.messagesystem.api.message;
+package zhawmessenger.messagesystem.api.modules.email.message;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import zhawmessenger.messagesystem.api.contact.EmailContact;
+import zhawmessenger.messagesystem.api.message.AbstractMessage;
+import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
 
 import java.util.List;
 
 /**
  */
-public class EmailAdapter extends AbstractMessage<EmailContact> implements Email{
+public class EmailAdapter extends AbstractMessage<EmailContact> implements Email {
     private String subject;
     private EmailContact sender;
     private List<EmailContact> bccs;
@@ -62,5 +62,12 @@ public class EmailAdapter extends AbstractMessage<EmailContact> implements Email
         else if (null == this.getSender())
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Email. From: %s. To: %s",
+                this.getSender(),
+                this.getReceivers());
     }
 }

@@ -49,13 +49,21 @@ public abstract class AbstractManipluateAction
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JDialog window = new JDialog(this.owner, "Create", true);
-        window.setLocationRelativeTo(this.owner);
+        final JDialog window = new JDialog(this.owner, "Create", true);
         window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         window.setLayout(new BorderLayout());
         window.add(this.messageFormFactory.createForm(
                 this.messageFactory.createMessage(this.messageClass)));
-        window.setSize(400,800);
+        window.setSize(700,700);
+
+        this.addCancelListener(new CancelListener() {
+            @Override
+            public void canceled(Message message) {
+                window.setVisible(false);
+                window.dispose();
+            }
+        });
+
         window.setVisible(true);
     }
 }
