@@ -1,4 +1,4 @@
-package zhawmessenger.messagesystem.api;
+package zhawmessenger.messagesystem.api.scheduler;
 
 /**
  */

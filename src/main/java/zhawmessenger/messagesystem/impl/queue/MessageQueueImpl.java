@@ -129,6 +129,6 @@ public class MessageQueueImpl implements MessageQueue {
 
     @Override
     public void schedule() {
-        // FIXME
+        this.sendAll();
     }
 }

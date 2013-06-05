@@ -63,4 +63,9 @@ public class SmsImpl extends AbstractMessage<MobilePhoneContact> implements Sms 
                 .append(this.getId())
                 .toHashCode();
     }
+
+    @Override
+    public byte[] getBytes() {
+        return this.getText().getBytes();
+    }
 }

@@ -20,17 +20,16 @@ public class EmailTransportImpl implements EmailTransport {
     }
 
     @Override
-
-    public boolean canSend(Class<? extends Message> messageClass) {
+    public boolean canSend(Class<? extends Message<?>> messageClass) {
         return Email.class.isAssignableFrom(messageClass);
     }
 
     @Override
-    public <T extends Message> SentMessage<T> send(final T message) throws TransportException {
+    public SentMessage<Email> send(final Email message) throws TransportException {
         final Date sentAt = new Date();
-        SentMessage<T> sm = new SentMessage<T>() {
+        SentMessage<Email> sm = new SentMessage<Email>() {
             @Override
-            public T getMessage() {
+            public Email getMessage() {
                 return message;
             }
 

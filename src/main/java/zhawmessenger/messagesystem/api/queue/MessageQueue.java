@@ -1,7 +1,7 @@
 package zhawmessenger.messagesystem.api.queue;
 
 import ca.odell.glazedlists.EventList;
-import zhawmessenger.messagesystem.api.Schedulable;
+import zhawmessenger.messagesystem.api.scheduler.Schedulable;
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.transport.SentMessage;
 

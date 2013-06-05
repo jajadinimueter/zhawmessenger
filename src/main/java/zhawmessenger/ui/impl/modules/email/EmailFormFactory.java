@@ -1,15 +1,31 @@
 package zhawmessenger.ui.impl.modules.email;
 
+import com.toedter.calendar.JDateChooser;
+import net.sourceforge.jdatepicker.JDateComponentFactory;
+import net.sourceforge.jdatepicker.JDatePicker;
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
+import net.sourceforge.jdatepicker.impl.UtilDateModel;
+import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
 import zhawmessenger.messagesystem.api.modules.email.message.Email;
+import zhawmessenger.messagesystem.api.util.Finder;
+import zhawmessenger.messagesystem.impl.contact.MemoryEmailContactFinder;
+import zhawmessenger.messagesystem.impl.modules.email.contact.EmailContactImpl;
 import zhawmessenger.ui.api.AbstractFormFactory;
 import zhawmessenger.ui.api.CancelListener;
 import zhawmessenger.ui.api.SaveListener;
+import zhawmessenger.ui.impl.components.ComponentFactory;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  */
@@ -17,16 +33,24 @@ public class EmailFormFactory
         extends AbstractFormFactory<Email> {
 
     @Override
-    public JPanel createForm(final Email message) {
+    public JPanel createForm(final Window owner, final Email message) {
         // build the actual form
-        return new EmailForm(message);
+        return new EmailForm(owner, message);
     }
 
     class EmailForm extends JPanel {
         private Email message;
+        private Window owner;
+        private List<Finder<String, EmailContact>> finders;
 
-        public EmailForm(Email message) {
+        public EmailForm(Window owner, Email message) {
             this.message = message;
+            this.owner = owner;
+            this.finders = new ArrayList<Finder<String, EmailContact>>();
+
+            ArrayList<EmailContact> contacts = new ArrayList<EmailContact>();
+            contacts.add(new EmailContactImpl("foo@bar.ch"));
+            this.finders.add(new MemoryEmailContactFinder(contacts));
 
             this.initComponent();
         }
@@ -63,14 +87,17 @@ public class EmailFormFactory
             gbc.gridx = 0;
             gbc.gridy = 3;
             gbc.weighty = 1.0;
-            JTextArea reciepients = new EmailReceiverTextArea(10, 1);
+            JTextArea reciepients = new EmailReceiverTextArea(this.owner, this.finders, 10, 1);
             reciepients.setBorder(border);
             form.add(reciepients, gbc);
             gbc.weighty = 0.0;
 
             gbc.gridx = 0;
             gbc.gridy = 4;
-            form.add(new JLabel("Anhänge"), gbc);
+            form.add(ComponentFactory.buildDatePanel(new Date()), gbc);
+//            form.add(new JFormattedTextField(new SimpleDateFormat("dd.mm.yyyy hh:mm")), gbc);
+//            form.add(new JLabel("Sendedatum"));
+//            form.add(new JLabel("Anhänge"), gbc);
 
             gbc.gridx = 0;
             gbc.gridy = 5;
@@ -150,6 +177,10 @@ public class EmailFormFactory
 
         }
 
+
+
+
     }
+
 
 }

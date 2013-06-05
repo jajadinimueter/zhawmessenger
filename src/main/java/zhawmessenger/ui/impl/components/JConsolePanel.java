@@ -36,4 +36,10 @@ public class JConsolePanel extends JPanel implements SentMessageLogger {
         this.logTextArea.insert(String.format("Message sent: %s\n", message.getMessage()), 0);
         this.logTextArea.setCaretPosition(0);
     }
+
+    @Override
+    public void log(String message) {
+        this.logTextArea.insert(message + '\n', 0);
+        this.logTextArea.setCaretPosition(0);
+    }
 }

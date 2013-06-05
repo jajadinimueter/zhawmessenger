@@ -22,7 +22,7 @@ public class MemoryEmailContactFinder implements Finder<String, EmailContact> {
         if (this.contacts != null) {
             for (EmailContact contact : this.contacts) {
                 for (String arg : findArgs) {
-                    if (contact.getValue().contains(arg)) {
+                    if (contact.getValue().contains(arg.trim())) {
                         foundContacts.add(contact);
                     }
                 }

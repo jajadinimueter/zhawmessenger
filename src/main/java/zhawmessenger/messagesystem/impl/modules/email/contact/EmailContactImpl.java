@@ -3,9 +3,7 @@ package zhawmessenger.messagesystem.impl.modules.email.contact;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import zhawmessenger.messagesystem.api.contact.AbstractContact;
-import zhawmessenger.messagesystem.api.contact.ContactValidationException;
 import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
-import zhawmessenger.messagesystem.api.contact.Person;
 
 /**
  */

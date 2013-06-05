@@ -13,6 +13,7 @@ import zhawmessenger.messagesystem.api.transport.Transport;
 import zhawmessenger.messagesystem.impl.message.DefaultMessageFactory;
 import zhawmessenger.messagesystem.impl.modules.email.transport.EmailTransportImpl;
 import zhawmessenger.messagesystem.impl.queue.MessageQueueImpl;
+import zhawmessenger.messagesystem.impl.scheduler.TimeIntervalScheduler;
 import zhawmessenger.ui.api.*;
 import zhawmessenger.ui.api.action.AbstractCreateAction;
 import zhawmessenger.ui.api.action.AbstractManipluateAction;
@@ -150,7 +151,7 @@ public class ZhawMessengerUi {
                             // confirm it can handle the message
                             Window win = messageWindowFactory.createWindow(frame, 500, 600);
                             //noinspection unchecked
-                            win.add(mp.getFormFactory().createForm(message.getMessage()),
+                            win.add(mp.getFormFactory().createForm(win, message.getMessage()),
                                     BorderLayout.CENTER);
 
                             win.setVisible(true);
@@ -192,8 +193,8 @@ public class ZhawMessengerUi {
 
     public static void main(String[] args) {
         final JConsolePanel consolePanel = new JConsolePanel();
+        final TimeIntervalScheduler scheduler = new TimeIntervalScheduler(1000);
 
-//        SentMessageLogger messageLogger = new ConsoleSentMessageLogger();
         MessageFactory messageFactory = new DefaultMessageFactory();
 
         List<MessagePlugin> plugins =
@@ -207,6 +208,8 @@ public class ZhawMessengerUi {
         transports.add(new EmailTransportImpl(consolePanel));
 
         MessageQueue queue = new MessageQueueImpl(transports);
+
+        scheduler.startSchedule(queue);
 
         final ZhawMessengerUi messengerUi = new ZhawMessengerUi(plugins, queue,
                 messageFactory, new DefaultMessageWindowFactory());

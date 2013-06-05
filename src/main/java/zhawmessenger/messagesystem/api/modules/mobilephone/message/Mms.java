@@ -4,5 +4,5 @@ import zhawmessenger.messagesystem.api.message.Message;
 
 /**
  */
-public interface Mms extends Message {
+public interface Mms extends ShortMessage {
 }

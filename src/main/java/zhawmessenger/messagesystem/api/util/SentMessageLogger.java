@@ -26,4 +26,7 @@ public interface SentMessageLogger {
      */
     void log(SentMessage message);
 
+
+    void log(String message);
+
 }

@@ -1,10 +1,14 @@
 package zhawmessenger.messagesystem.api.transport;
 
+import zhawmessenger.messagesystem.api.contact.Contact;
 import zhawmessenger.messagesystem.api.message.Message;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  */
-public interface Transport {
+public interface Transport<T extends Message<?>> {
 
     /**
      * Test whether this transport is able to
@@ -12,7 +16,7 @@ public interface Transport {
      *
      * @param messageClass the interface class to check for
      */
-    boolean canSend(Class<? extends Message> messageClass);
+    boolean canSend(Class<? extends Message<?>> messageClass);
 
     /**
      * Send a message over the transport. This must
@@ -26,5 +30,5 @@ public interface Transport {
      *         contains information about the progress
      *         of the sent message.
      */
-    <T extends Message> SentMessage<T> send(T message) throws TransportException;
+    SentMessage<T> send(T message) throws TransportException;
 }

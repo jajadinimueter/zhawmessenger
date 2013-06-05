@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  */
-public interface Sms extends Message<MobilePhoneContact> {
+public interface Sms extends ShortMessage {
 
     /**
      * One SMS is limited to 160 chars. Since the system allows

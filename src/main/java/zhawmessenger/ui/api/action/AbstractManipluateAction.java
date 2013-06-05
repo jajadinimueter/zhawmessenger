@@ -53,7 +53,7 @@ public abstract class AbstractManipluateAction
         window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         window.setLayout(new BorderLayout());
         window.add(this.messageFormFactory.createForm(
-                this.messageFactory.createMessage(this.messageClass)));
+                window, this.messageFactory.createMessage(this.messageClass)));
         window.setSize(700,700);
 
         this.addCancelListener(new CancelListener() {
