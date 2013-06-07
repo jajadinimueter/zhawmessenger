@@ -5,6 +5,7 @@ import zhawmessenger.messagesystem.api.util.Finder;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -25,7 +26,7 @@ public class Suggestor<T> implements KeyListener, DocumentListener {
     private final List<Finder<String,T>> finders;
 
     private final JDialog choicesDialog;
-    private final JList choicesList;
+    private final JTable choicesList;
 
     private int startPos = 0;
     private int endPos = 0;
@@ -34,8 +35,11 @@ public class Suggestor<T> implements KeyListener, DocumentListener {
         this(owner, textComponent, extractor, new ArrayList<Finder<String, T>>());
     }
 
-    public Suggestor(Window owner, JTextArea textComponent,
-                     SuggesterValueExtractor<T> extractor, List<Finder<String, T>> finders) {
+    public Suggestor(Window owner,
+                     JTextArea textComponent,
+                     SuggesterValueExtractor<T> extractor,
+                     List<Finder<String, T>> finders) {
+
         this.logic = new SuggestorLogic<T>();
         this.extractor = extractor;
         this.textComponent = textComponent;
@@ -48,11 +52,10 @@ public class Suggestor<T> implements KeyListener, DocumentListener {
         this.choicesDialog.setFocusable(false);
         this.choicesDialog.setUndecorated(true);
         this.choicesDialog.setSize(200, 20);
-        this.choicesList = new JList();
+        this.choicesList = new JTable();
         this.choicesList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        this.choicesList.setLayoutOrientation(JList.VERTICAL);
         JScrollPane listScroller = new JScrollPane(this.choicesList);
-        listScroller.setPreferredSize(new Dimension(250, 80));
+        listScroller.setPreferredSize(new Dimension(300, 200));
         this.choicesDialog.add(listScroller);
     }
 
@@ -78,7 +81,7 @@ public class Suggestor<T> implements KeyListener, DocumentListener {
 //        Point pt = textComponent.getCaret().getMagicCaretPosition();
 
 //        if ( pt != null) {
-        DefaultListModel mod = new DefaultListModel();
+        DefaultListModel mod = new DefaultTableModel();
         for (T item : items) {
             mod.addElement(item);
         }
@@ -90,7 +93,7 @@ public class Suggestor<T> implements KeyListener, DocumentListener {
         choicesDialog.setLocation(100, 100);
 //        choicesDialog.setVisible(items.size() > 0);
         if (items.size() > 0) {
-            choicesList.setSelectedIndex(0);
+            choicesList.;
         }
         choicesDialog.setVisible(true);
 //        } else {

@@ -42,6 +42,7 @@ public class EmailFormFactory
 
             ArrayList<EmailContact> contacts = new ArrayList<EmailContact>();
             contacts.add(new EmailContactImpl("foo@bar.ch"));
+            contacts.add(new EmailContactImpl("bar@baz.ch"));
             this.finders.add(new MemoryEmailContactFinder(contacts));
 
             this.buildFormPanel();

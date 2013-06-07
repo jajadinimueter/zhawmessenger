@@ -8,6 +8,7 @@ import zhawmessenger.messagesystem.api.queue.MessageQueue;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 import zhawmessenger.messagesystem.api.transport.SentMessage;
 import zhawmessenger.messagesystem.api.transport.Transport;
+import zhawmessenger.messagesystem.persistance.QueueRepository;
 import zhawmessenger.messagesystem.util.DefaultTimeProvider;
 import zhawmessenger.messagesystem.util.TimeProvider;
 
@@ -21,31 +22,44 @@ public class MessageQueueImpl implements MessageQueue {
     private final List<Transport> transports;
     private final EventList<QueuedMessage> messages;
     private final TimeProvider timeProvider;
+    private final QueueRepository repository;
 
     public MessageQueueImpl(List<Transport> transports,
                             TimeProvider timeProvider,
-                            EventList<QueuedMessage> messages) {
+                            EventList<QueuedMessage> messages,
+                            QueueRepository repository) {
+        this.repository = repository;
         this.messages = messages;
         this.transports = transports;
         this.timeProvider = timeProvider;
+
+        this.loadQueue();
     }
 
     public MessageQueueImpl(List<Transport> transports,
-                            TimeProvider timeProvider) {
+                            TimeProvider timeProvider,
+                            QueueRepository repository) {
         this(
                 transports,
                 timeProvider,
-                new BasicEventList<QueuedMessage>()
+                new BasicEventList<QueuedMessage>(),
+                repository
         );
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public MessageQueueImpl(List<Transport> transports) {
+    public MessageQueueImpl(List<Transport> transports,
+                            QueueRepository repository) {
         this(
                 transports,
                 new DefaultTimeProvider(),
-                new BasicEventList<QueuedMessage>()
+                new BasicEventList<QueuedMessage>(),
+                repository
         );
+    }
+
+    protected void loadQueue() {
+        this.messages.addAll(this.repository.find());
     }
 
     public void send(QueuedMessage message) {
@@ -59,12 +73,15 @@ public class MessageQueueImpl implements MessageQueue {
                     Message msg = message.getMessage();
                     if (force || msg.getSendTime() < this.timeProvider.getTime()) {
                         for (Transport transport : this.transports) {
+                            //noinspection unchecked
                             if (transport.canSend(msg.getClass())) {
                                 // We can suppress this because
                                 // the transport already told us
                                 // it can handle this type!
                                 //noinspection unchecked
-                                return transport.send(msg);
+                                repository.markSending(message);
+                                SentMessage sentMessage = transport.send(msg);
+                                repository.markSent(message);
                             }
                         }
                     }

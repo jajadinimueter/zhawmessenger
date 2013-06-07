@@ -36,6 +36,35 @@ public class ZhawMessengerUi {
         this.messageQueue = messageQueue;
     }
 
+    private void openMessage(MessagePlugin mp, JFrame owner) {
+        openMessage(mp, owner, null);
+    }
+
+    private void openMessage(MessagePlugin mp, JFrame owner, Message message) {
+        MessageWindowFactory windowFactory = mp.getWindowFactory();
+        final Window win = windowFactory.createWindow(owner, 500, 500);
+        MessageFormFactory factory = mp.getFormFactory();
+        if (message == null) {
+            message = mp.getMessageFactory().createMessage();
+        }
+        //noinspection unchecked
+        final SavableForm savableForm = factory.createForm(win, message);
+        savableForm.addSaveListener(new SaveListener() {
+            @Override
+            public void saved(Message message) {
+                messageQueue.add(message);
+            }
+        });
+        savableForm.addCancelListener(new CancelListener() {
+            @Override
+            public void canceled(Message message) {
+                win.dispose();
+            }
+        });
+        win.add(savableForm.getForm());
+        win.setVisible(true);
+    }
+
     public JFrame createUi() {
         final JFrame frame = new JFrame("ZHAW Messenger");
 
@@ -105,26 +134,7 @@ public class ZhawMessengerUi {
             Action createAction = new AbstractAction(mp.getName(), mp.getIcon()) {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    MessageWindowFactory windowFactory = mp.getWindowFactory();
-                    final Window win = windowFactory.createWindow(frame, 500, 500);
-                    MessageFormFactory factory = mp.getFormFactory();
-                    Message message = mp.getMessageFactory().createMessage();
-                    //noinspection unchecked
-                    final SavableForm savableForm = factory.createForm(win, message);
-                    savableForm.addSaveListener(new SaveListener() {
-                        @Override
-                        public void saved(Message message) {
-                            messageQueue.add(message);
-                        }
-                    });
-                    savableForm.addCancelListener(new CancelListener() {
-                        @Override
-                        public void canceled(Message message) {
-                            win.dispose();
-                        }
-                    });
-                    win.add(savableForm.getForm());
-                    win.setVisible(true);
+                    openMessage(mp, frame);
                 }
             };
 
@@ -147,17 +157,9 @@ public class ZhawMessengerUi {
                     QueuedMessage message =
                             queuedMessages.get(selCol);
                     for (MessagePlugin mp : messagePlugins) {
+                        //noinspection unchecked
                         if (mp.doesHandle(message.getMessage().getClass())) {
-                            // we can suppress, because plugin did
-                            // confirm it can handle the message
-                            Window win = mp.getWindowFactory().createWindow(frame, 500, 600);
-                            //noinspection unchecked
-//                            win.add(mp.getFormFactory()
-//                                        .createForm(win, message.getMessage())
-//                                        .getUi(),
-//                                    BorderLayout.CENTER);
-
-                            win.setVisible(true);
+                            openMessage(mp, frame, message.getMessage());
                         }
                     }
                 }
