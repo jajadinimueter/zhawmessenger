@@ -63,7 +63,7 @@ public class SuggestorLogic<T> {
         if ( text.length() > 0 ) {
             for (int i = startPos; i >= 0; i--) {
                 char x = text.charAt(i);
-                if (x == ',') {
+                if (x == ',' || x == '\n') {
                     searchFrom = i + 1;
                     replaceFrom = i + 1;
                     break;

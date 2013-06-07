@@ -1,5 +1,6 @@
 package zhawmessenger.ui.impl;
 
+import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swing.AdvancedTableModel;
@@ -10,8 +11,10 @@ import zhawmessenger.messagesystem.api.queue.MessageQueue;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 import zhawmessenger.messagesystem.api.transport.Transport;
 import zhawmessenger.messagesystem.impl.modules.email.transport.EmailTransportImpl;
+import zhawmessenger.messagesystem.impl.queue.MemoryQueueRepository;
 import zhawmessenger.messagesystem.impl.queue.MessageQueueImpl;
 import zhawmessenger.messagesystem.impl.scheduler.TimeIntervalScheduler;
+import zhawmessenger.messagesystem.persistance.QueueRepository;
 import zhawmessenger.ui.api.*;
 import zhawmessenger.ui.impl.components.JConsolePanel;
 import zhawmessenger.ui.impl.modules.email.EmailMessagePlugin;
@@ -210,7 +213,9 @@ public class ZhawMessengerUi {
         List<Transport> transports = new ArrayList<Transport>();
         transports.add(new EmailTransportImpl(consolePanel));
 
-        MessageQueue queue = new MessageQueueImpl(transports);
+        EventList<QueuedMessage> messages = new BasicEventList<QueuedMessage>();
+        QueueRepository repository = new MemoryQueueRepository(messages);
+        MessageQueue queue = new MessageQueueImpl(transports, repository, messages);
 
         scheduler.startSchedule(queue);
 

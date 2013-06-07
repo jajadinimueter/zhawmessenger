@@ -1,6 +1,5 @@
 package zhawmessenger.messagesystem.impl.queue;
 
-import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import zhawmessenger.messagesystem.api.message.Message;
@@ -26,35 +25,26 @@ public class MessageQueueImpl implements MessageQueue {
 
     public MessageQueueImpl(List<Transport> transports,
                             TimeProvider timeProvider,
-                            EventList<QueuedMessage> messages,
-                            QueueRepository repository) {
+                            QueueRepository repository,
+                            EventList<QueuedMessage> messages) {
+
         this.repository = repository;
-        this.messages = messages;
         this.transports = transports;
         this.timeProvider = timeProvider;
+        this.messages = messages;
 
         this.loadQueue();
     }
 
-    public MessageQueueImpl(List<Transport> transports,
-                            TimeProvider timeProvider,
-                            QueueRepository repository) {
-        this(
-                transports,
-                timeProvider,
-                new BasicEventList<QueuedMessage>(),
-                repository
-        );
-    }
-
     @SuppressWarnings("UnusedDeclaration")
     public MessageQueueImpl(List<Transport> transports,
-                            QueueRepository repository) {
+                            QueueRepository repository,
+                            EventList<QueuedMessage> messages) {
         this(
                 transports,
                 new DefaultTimeProvider(),
-                new BasicEventList<QueuedMessage>(),
-                repository
+                repository,
+                messages
         );
     }
 
@@ -78,8 +68,8 @@ public class MessageQueueImpl implements MessageQueue {
                                 // We can suppress this because
                                 // the transport already told us
                                 // it can handle this type!
-                                //noinspection unchecked
                                 repository.markSending(message);
+                                //noinspection unchecked
                                 SentMessage sentMessage = transport.send(msg);
                                 repository.markSent(message);
                             }
