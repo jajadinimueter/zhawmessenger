@@ -6,11 +6,9 @@ import ca.odell.glazedlists.swing.AdvancedTableModel;
 import ca.odell.glazedlists.swing.GlazedListsSwing;
 import ca.odell.glazedlists.swing.TableComparatorChooser;
 import zhawmessenger.messagesystem.api.message.Message;
-import zhawmessenger.messagesystem.api.message.MessageFactory;
 import zhawmessenger.messagesystem.api.queue.MessageQueue;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 import zhawmessenger.messagesystem.api.transport.Transport;
-import zhawmessenger.messagesystem.impl.message.DefaultMessageFactory;
 import zhawmessenger.messagesystem.impl.modules.email.transport.EmailTransportImpl;
 import zhawmessenger.messagesystem.impl.queue.MessageQueueImpl;
 import zhawmessenger.messagesystem.impl.scheduler.TimeIntervalScheduler;
@@ -31,17 +29,11 @@ public class ZhawMessengerUi {
 
     private final List<MessagePlugin> messagePlugins;
     private final MessageQueue messageQueue;
-    private final MessageFactory messageFactory;
-    private final MessageWindowFactory messageWindowFactory;
 
     public ZhawMessengerUi(List<MessagePlugin> messagePlugins,
-                           MessageQueue messageQueue,
-                           MessageFactory messageFactory,
-                           MessageWindowFactory messageWindowFactory) {
-        this.messageFactory = messageFactory;
+                           MessageQueue messageQueue) {
         this.messagePlugins = messagePlugins;
         this.messageQueue = messageQueue;
-        this.messageWindowFactory = messageWindowFactory;
     }
 
     public JFrame createUi() {
@@ -116,7 +108,7 @@ public class ZhawMessengerUi {
                     MessageWindowFactory windowFactory = mp.getWindowFactory();
                     final Window win = windowFactory.createWindow(frame, 500, 500);
                     MessageFormFactory factory = mp.getFormFactory();
-                    Message message = messageFactory.createMessage(mp.getMessageClass());
+                    Message message = mp.getMessageFactory().createMessage();
                     //noinspection unchecked
                     final SavableForm savableForm = factory.createForm(win, message);
                     savableForm.addSaveListener(new SaveListener() {
@@ -158,7 +150,7 @@ public class ZhawMessengerUi {
                         if (mp.doesHandle(message.getMessage().getClass())) {
                             // we can suppress, because plugin did
                             // confirm it can handle the message
-                            Window win = messageWindowFactory.createWindow(frame, 500, 600);
+                            Window win = mp.getWindowFactory().createWindow(frame, 500, 600);
                             //noinspection unchecked
 //                            win.add(mp.getFormFactory()
 //                                        .createForm(win, message.getMessage())
@@ -206,8 +198,6 @@ public class ZhawMessengerUi {
         final JConsolePanel consolePanel = new JConsolePanel();
         final TimeIntervalScheduler scheduler = new TimeIntervalScheduler(1000);
 
-        MessageFactory messageFactory = new DefaultMessageFactory();
-
         List<MessagePlugin> plugins =
                 new ArrayList<MessagePlugin>();
 
@@ -222,8 +212,7 @@ public class ZhawMessengerUi {
 
         scheduler.startSchedule(queue);
 
-        final ZhawMessengerUi messengerUi = new ZhawMessengerUi(plugins, queue,
-                messageFactory, new DefaultMessageWindowFactory());
+        final ZhawMessengerUi messengerUi = new ZhawMessengerUi(plugins, queue);
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
