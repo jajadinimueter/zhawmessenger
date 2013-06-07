@@ -93,9 +93,22 @@ public class MessageQueueImpl implements MessageQueue {
 
     @Override
     public QueuedMessage add(Message message) {
-        QueuedMessage qMessage = new QueuedMessageImpl(message, timeProvider);
-        messages.add(qMessage);
-        return qMessage;
+        if (this.contains(message)) {
+            return this.get(message);
+        } else {
+            QueuedMessage qMessage = new QueuedMessageImpl(message, timeProvider);
+            messages.add(qMessage);
+            return qMessage;
+        }
+    }
+
+    public QueuedMessage get(Message message) {
+        for (QueuedMessage m : messages) {
+            if (m.getMessage() == message) {
+                return m;
+            }
+        }
+        return null;
     }
 
     @Override

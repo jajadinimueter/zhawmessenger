@@ -2,7 +2,6 @@ package zhawmessenger.ui.api;
 
 import zhawmessenger.messagesystem.api.message.Message;
 
-import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -11,6 +10,6 @@ import java.awt.*;
 public interface MessageFormFactory<M extends Message>
         extends SaveObservable, CancelObservable {
 
-    JPanel createForm(Window owner, M message);
+    SavableForm<M> createForm(Window owner, M message);
 
 }

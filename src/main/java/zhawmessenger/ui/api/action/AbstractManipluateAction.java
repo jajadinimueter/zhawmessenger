@@ -52,8 +52,9 @@ public abstract class AbstractManipluateAction
         final JDialog window = new JDialog(this.owner, "Create", true);
         window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         window.setLayout(new BorderLayout());
-        window.add(this.messageFormFactory.createForm(
-                window, this.messageFactory.createMessage(this.messageClass)));
+//        window.add(this.messageFormFactory.createForm(
+//                window, this.messageFactory.createMessage(this.messageClass))
+//                    .getUi());
         window.setSize(700,700);
 
         this.addCancelListener(new CancelListener() {

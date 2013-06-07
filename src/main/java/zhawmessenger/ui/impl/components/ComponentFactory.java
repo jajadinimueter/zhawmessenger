@@ -14,6 +14,7 @@ public class ComponentFactory {
         JPanel datePanel = new JPanel();
 //        datePanel.setBorder(new LineBorder(Color.black));
         datePanel.setLayout(new GridBagLayout());
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(3, 3, 3, 3);

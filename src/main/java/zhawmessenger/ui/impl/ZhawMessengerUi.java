@@ -15,8 +15,6 @@ import zhawmessenger.messagesystem.impl.modules.email.transport.EmailTransportIm
 import zhawmessenger.messagesystem.impl.queue.MessageQueueImpl;
 import zhawmessenger.messagesystem.impl.scheduler.TimeIntervalScheduler;
 import zhawmessenger.ui.api.*;
-import zhawmessenger.ui.api.action.AbstractCreateAction;
-import zhawmessenger.ui.api.action.AbstractManipluateAction;
 import zhawmessenger.ui.impl.components.JConsolePanel;
 import zhawmessenger.ui.impl.modules.email.EmailMessagePlugin;
 
@@ -112,22 +110,33 @@ public class ZhawMessengerUi {
         createMessageMenu = new JMenu("Nachricht erstellen");
 
         for (final MessagePlugin mp : messagePlugins) {
-            AbstractManipluateAction a = new AbstractCreateAction(frame, mp.getName(),
-                    mp.getMessageClass(), messageFactory) {
+            Action createAction = new AbstractAction(mp.getName(), mp.getIcon()) {
                 @Override
-                protected MessageFormFactory getForm() {
-                    return mp.getFormFactory();
+                public void actionPerformed(ActionEvent e) {
+                    MessageWindowFactory windowFactory = mp.getWindowFactory();
+                    final Window win = windowFactory.createWindow(frame, 500, 500);
+                    MessageFormFactory factory = mp.getFormFactory();
+                    Message message = messageFactory.createMessage(mp.getMessageClass());
+                    //noinspection unchecked
+                    final SavableForm savableForm = factory.createForm(win, message);
+                    savableForm.addSaveListener(new SaveListener() {
+                        @Override
+                        public void saved(Message message) {
+                            messageQueue.add(message);
+                        }
+                    });
+                    savableForm.addCancelListener(new CancelListener() {
+                        @Override
+                        public void canceled(Message message) {
+                            win.dispose();
+                        }
+                    });
+                    win.add(savableForm.getForm());
+                    win.setVisible(true);
                 }
             };
-            a.addSaveListener(new SaveListener() {
-                @Override
-                public void saved(Message message) {
-                    if (!messageQueue.contains(message)) {
-                        messageQueue.add(message);
-                    }
-                }
-            });
-            createMessageMenu.add(a);
+
+            createMessageMenu.add(createAction);
         }
 
         fileMenu.add(createMessageMenu);
@@ -151,8 +160,10 @@ public class ZhawMessengerUi {
                             // confirm it can handle the message
                             Window win = messageWindowFactory.createWindow(frame, 500, 600);
                             //noinspection unchecked
-                            win.add(mp.getFormFactory().createForm(win, message.getMessage()),
-                                    BorderLayout.CENTER);
+//                            win.add(mp.getFormFactory()
+//                                        .createForm(win, message.getMessage())
+//                                        .getUi(),
+//                                    BorderLayout.CENTER);
 
                             win.setVisible(true);
                         }
