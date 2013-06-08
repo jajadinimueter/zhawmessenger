@@ -9,11 +9,18 @@ import zhawmessenger.ui.api.AbstractFormFactory;
 import zhawmessenger.ui.api.DefaultSavableForm;
 import zhawmessenger.ui.api.MessageForm;
 import zhawmessenger.ui.api.SavableForm;
+import zhawmessenger.ui.api.form.FormBuilder;
+import zhawmessenger.ui.api.form.FormBuilderConstraints;
+import zhawmessenger.ui.api.form.GridBagConstraintsChanger;
+import zhawmessenger.ui.api.form.GridBagConstraintsChangerAdapter;
 import zhawmessenger.ui.impl.components.ComponentFactory;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,7 +52,79 @@ public class EmailFormFactory
             contacts.add(new EmailContactImpl("bar@baz.ch"));
             this.finders.add(new MemoryEmailContactFinder(contacts));
 
-            this.buildFormPanel();
+            this.buildForm();
+//            this.buildFormPanel();
+        }
+
+        protected void buildForm() {
+            FormBuilder builder = new FormBuilder(this, false);
+
+            JTextField senderField = builder.addComponent(new JLabel("Absender"),
+                    new JTextField());
+
+            JScrollPane receiversField = builder.addComponent(new JLabel("Empfänger"),
+                    new JScrollPane(new EmailReceiverTextArea(owner, finders, 1, 1)),
+                    new GridBagConstraintsChangerAdapter() {
+                        @Override
+                        public GridBagConstraints changeField(Component field, GridBagConstraints gbc) {
+                            gbc.fill = GridBagConstraints.BOTH;
+                            gbc.weighty = 1.0;
+                            return gbc;
+                        }
+
+                        @Override
+                        public GridBagConstraints changeFieldContainer(JPanel fieldContainer, GridBagConstraints gbc) {
+                            gbc.fill = GridBagConstraints.BOTH;
+                            gbc.weighty = .2;
+                            return gbc;
+                        }
+                    });
+
+            receiversField.setBorder(new LineBorder(Color.GRAY));
+
+            FormBuilderConstraints leftAlign = new FormBuilderConstraints(
+                    FormBuilderConstraints.Align.LEFT);
+
+            // send at
+            FormBuilder sendAtBuilder = new FormBuilder();
+            JCheckBox sendImmediately = sendAtBuilder.addField(
+                    new JCheckBox("Sofort"),
+                    leftAlign);
+            JPanel sendAtDatePanel = sendAtBuilder.addField(
+                    ComponentFactory.buildDatePanel(new Date()),
+                    leftAlign);
+            builder.addComponent(new JLabel("Versenden am"), sendAtBuilder.getPanel());
+
+            // reminder
+            FormBuilder remindAtBuilder = new FormBuilder();
+            JCheckBox noReminder = remindAtBuilder.addField(
+                    new JCheckBox("Keine Erinnerung"),
+                    leftAlign);
+            JPanel remindDatePanel = remindAtBuilder.addField(
+                    ComponentFactory.buildDatePanel(new Date()),
+                    leftAlign);
+            builder.addComponent(new JLabel("Erinnerung am"), remindAtBuilder.getPanel());
+
+            // text
+            JScrollPane text = builder.addField(new JScrollPane(new JTextArea(1, 1)),
+                    new GridBagConstraintsChangerAdapter() {
+                        @Override
+                        public GridBagConstraints changeField(Component field, GridBagConstraints gbc) {
+                            gbc.fill = GridBagConstraints.BOTH;
+                            gbc.weighty = 1.0;
+                            return gbc;
+                        }
+
+                        @Override
+                        public GridBagConstraints changeFieldContainer(JPanel fieldContainer,
+                                                                       GridBagConstraints gbc) {
+                            gbc.fill = GridBagConstraints.BOTH;
+                            gbc.weighty = 1.0;
+                            return gbc;
+                        }
+                    });
+
+            receiversField.setBorder(new LineBorder(Color.GRAY));
         }
 
         protected void buildFormPanel() {
@@ -79,11 +158,13 @@ public class EmailFormFactory
             gbc.gridx = 0;
             gbc.gridy = 3;
             gbc.weighty = 1.0;
+            gbc.weightx = 0.2;
             JTextArea reciepients = new EmailReceiverTextArea(
                     this.owner, this.finders, 10, 1);
             reciepients.setBorder(border);
             this.add(reciepients, gbc);
             gbc.weighty = 0.0;
+            gbc.weightx = 0.0;
 
             gbc.gridx = 0;
             gbc.gridy = 4;

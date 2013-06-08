@@ -151,4 +151,15 @@ public class MessageQueueImpl implements MessageQueue {
     public void schedule() {
         this.sendAll();
     }
+
+    @Override
+    public void remove(QueuedMessage message) {
+        this.messages.remove(message);
+    }
+
+    @Override
+    public void remove(Message message) {
+        QueuedMessage msg = this.get(message);
+        this.remove(msg);
+    }
 }

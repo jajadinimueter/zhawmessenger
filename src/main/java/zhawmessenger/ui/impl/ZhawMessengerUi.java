@@ -24,6 +24,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,7 +46,7 @@ public class ZhawMessengerUi {
 
     private void openMessage(MessagePlugin mp, JFrame owner, Message message) {
         MessageWindowFactory windowFactory = mp.getWindowFactory();
-        final Window win = windowFactory.createWindow(owner, 500, 500);
+        final Window win = windowFactory.createWindow(owner);
         MessageFormFactory factory = mp.getFormFactory();
         if (message == null) {
             message = mp.getMessageFactory().createMessage();
@@ -175,9 +176,25 @@ public class ZhawMessengerUi {
             public void actionPerformed(ActionEvent e) {
                 int selCol = messageTable.getSelectedColumn();
                 if (selCol >= 0) {
+                    // set send time to now, the message is
+                    // sent asap
                     QueuedMessage message =
                             queuedMessages.get(selCol);
-                    messageQueue.send(message);
+                    Message msg = message.getMessage();
+                    msg.setSendTime(new Date().getTime());
+                }
+            }
+        });
+
+        final JButton deleteButton = new JButton("Delete");
+        deleteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selCol = messageTable.getSelectedColumn();
+                if (selCol >= 0) {
+                    QueuedMessage queuedMessage = queuedMessages.get(selCol);
+                    queuedMessage.suspend();
+                    messageQueue.remove(queuedMessage);
                 }
             }
         });

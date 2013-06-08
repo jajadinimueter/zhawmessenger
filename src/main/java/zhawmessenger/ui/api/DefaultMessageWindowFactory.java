@@ -10,8 +10,27 @@ import java.util.List;
 /**
  */
 public class DefaultMessageWindowFactory implements MessageWindowFactory {
+    private static int DEFAULT_WIDTH = 800;
+    private static int DEFAULT_HEIGHT = 600;
+
     private List<SaveListener> saveListeners = new ArrayList<SaveListener>();
     private List<CancelListener> cancelListeners = new ArrayList<CancelListener>();
+
+    private int width;
+    private int height;
+
+    public DefaultMessageWindowFactory() {
+        this(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    }
+
+    public DefaultMessageWindowFactory(int width, int height) {
+        this.width = width;
+        this.height = height;
+    }
+
+    public Window createWindow(JFrame owner) {
+        return createWindow(owner, width, height);
+    }
 
     @Override
     public Window createWindow(JFrame owner, int width, int height) {

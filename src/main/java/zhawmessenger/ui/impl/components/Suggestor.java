@@ -89,10 +89,18 @@ public class Suggestor<T> implements KeyListener, DocumentListener {
 
         public void add(T item) {
             this.items.add(item);
+            this.fireTableDataChanged();
+        }
+
+        public void replace(Collection<T> items) {
+            this.items.clear();
+            this.addAll(items);
+            this.fireTableDataChanged();
         }
 
         public void addAll(Collection<T> items) {
             this.items.addAll(items);
+            this.fireTableDataChanged();
         }
 
         public T get(int index) {
@@ -101,6 +109,7 @@ public class Suggestor<T> implements KeyListener, DocumentListener {
 
         public void clear() {
             this.items.clear();
+            this.fireTableDataChanged();
         }
 
         @Override
@@ -124,8 +133,7 @@ public class Suggestor<T> implements KeyListener, DocumentListener {
         Point pt = textComponent.getCaret().getMagicCaretPosition();
 
         if (pt != null) {
-            tableModel.clear();
-            tableModel.addAll(items);
+            tableModel.replace(items);
             double x = owner.getX() + textComponent.getX() + pt.getX();
             double y = owner.getY() + textComponent.getY() + pt.getY() + 20;
             choicesDialog.setLocation((int)x, (int)y);

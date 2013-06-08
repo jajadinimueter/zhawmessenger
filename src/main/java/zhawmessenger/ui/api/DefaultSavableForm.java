@@ -3,6 +3,7 @@ package zhawmessenger.ui.api;
 import zhawmessenger.messagesystem.api.message.Message;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 import java.awt.event.ActionEvent;
@@ -40,6 +41,7 @@ public class DefaultSavableForm<T extends Message>
 
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
+        formPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         mainPanel.add(formPanel, BorderLayout.CENTER);
     }
 

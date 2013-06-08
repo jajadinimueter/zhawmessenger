@@ -47,7 +47,7 @@ public class EmailMessagePlugin implements MessagePlugin<Email> {
     }
 
     public MessageWindowFactory getWindowFactory() {
-        return new DefaultMessageWindowFactory();
+        return new DefaultMessageWindowFactory(1000, 700);
     }
 
 }

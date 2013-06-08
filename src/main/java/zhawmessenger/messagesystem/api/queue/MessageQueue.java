@@ -46,6 +46,9 @@ public interface MessageQueue extends Schedulable {
      */
     QueuedMessage getById(long id);
 
+    void remove(QueuedMessage message);
+
+    void remove(Message message);
 
     EventList<QueuedMessage> getQueuedMessages();
 
