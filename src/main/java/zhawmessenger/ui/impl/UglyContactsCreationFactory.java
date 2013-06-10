@@ -6,12 +6,16 @@ import zhawmessenger.messagesystem.api.modules.addressbook.persistance.GroupRepo
 import zhawmessenger.messagesystem.api.modules.addressbook.persistance.PersonRepository;
 import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
 import zhawmessenger.messagesystem.api.modules.email.persistance.EmailContactRepository;
+import zhawmessenger.messagesystem.api.modules.print.contact.Printer;
+import zhawmessenger.messagesystem.api.modules.print.persistance.PrinterRepository;
 import zhawmessenger.messagesystem.impl.modules.addressbook.GroupImpl;
 import zhawmessenger.messagesystem.impl.modules.addressbook.PersonImpl;
 import zhawmessenger.messagesystem.impl.modules.addressbook.persistance.MemoryGroupRepository;
 import zhawmessenger.messagesystem.impl.modules.addressbook.persistance.MemoryPersonRepository;
 import zhawmessenger.messagesystem.impl.modules.email.contact.EmailContactImpl;
 import zhawmessenger.messagesystem.impl.modules.email.persistance.MemoryEmailContactRepository;
+import zhawmessenger.messagesystem.impl.modules.print.contact.PrinterImpl;
+import zhawmessenger.messagesystem.impl.modules.print.persistance.MemoryPrinterRepository;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -23,6 +27,9 @@ import java.util.UUID;
 public class UglyContactsCreationFactory {
 
     private static UglyContactsCreationFactory instance;
+
+    private final Printer hpDeskJet;
+    private final Printer brother;
 
     private final EmailContact bfuchsEmail1;
     private final EmailContact bfuchsEmail2;
@@ -44,6 +51,7 @@ public class UglyContactsCreationFactory {
     private final EmailContactRepository emailContactRepository;
     private final PersonRepository personRepository;
     private final GroupRepository groupRepository;
+    private final PrinterRepository printerRepository;
 
     private UglyContactsCreationFactory() {
         aeinsteinEmail = new EmailContactImpl(UUID.randomUUID(), "a.einstein@gmx.ch");
@@ -62,6 +70,9 @@ public class UglyContactsCreationFactory {
 
         groupPhysisists = new GroupImpl(UUID.randomUUID(), "Physiker");
         groupInfStudents = new GroupImpl(UUID.randomUUID(), "Informatik-Studenten");
+
+        brother = new PrinterImpl(UUID.randomUUID(), "Brother Px44");
+        hpDeskJet = new PrinterImpl(UUID.randomUUID(), "HP Desk Jet");
 
         groupPhysisists.addPerson(aeinstein);
         groupPhysisists.addPerson(bgreen);
@@ -95,6 +106,10 @@ public class UglyContactsCreationFactory {
                 groupPhysisists, groupInfStudents
         ));
 
+        printerRepository = new MemoryPrinterRepository(Arrays.asList(
+                brother, hpDeskJet
+        ));
+
     }
 
     /**
@@ -107,6 +122,14 @@ public class UglyContactsCreationFactory {
             instance = new UglyContactsCreationFactory();
         }
         return instance;
+    }
+
+    public Printer getHpDeskJet() {
+        return hpDeskJet;
+    }
+
+    public Printer getBrother() {
+        return brother;
     }
 
     public EmailContact getBfuchsEmail1() {
@@ -155,6 +178,10 @@ public class UglyContactsCreationFactory {
 
     public Group getGroupInfStudents() {
         return groupInfStudents;
+    }
+
+    public PrinterRepository getPrinterRepository() {
+        return printerRepository;
     }
 
     public EmailContactRepository getEmailContactRepository() {

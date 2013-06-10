@@ -205,7 +205,8 @@ public class ZhawMessengerUi {
         List<MessagePlugin> plugins =
                 new ArrayList<MessagePlugin>();
 
-        MessagePlugin printMessagePlugin = new PrintMessagePlugin();
+        MessagePlugin printMessagePlugin
+                = new PrintMessagePlugin(repositoryFactory.getPrinterRepository());
 
         MessagePlugin smsMessagePlugin = new SmsMessagePlugin();
 

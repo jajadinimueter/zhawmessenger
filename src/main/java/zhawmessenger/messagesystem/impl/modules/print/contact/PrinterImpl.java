@@ -11,6 +11,10 @@ public class PrinterImpl
         extends AbstractContact
         implements Printer {
 
+    public PrinterImpl(Object id, String value) {
+        super(id, value);
+    }
+
     @Override
     protected Class<? extends Contact> getContactClass() {
         return Printer.class;

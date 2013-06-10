@@ -108,23 +108,7 @@ public class EmailFormFactory
 
             // text
             text = new JTextArea(1, 1);
-            builder.addField(new JScrollPane(text),
-                    new GridBagConstraintsChangerAdapter() {
-                        @Override
-                        public GridBagConstraints changeField(Component field, GridBagConstraints gbc) {
-                            gbc.fill = GridBagConstraints.BOTH;
-                            gbc.weighty = 1.0;
-                            return gbc;
-                        }
-
-                        @Override
-                        public GridBagConstraints changeFieldContainer(JPanel fieldContainer,
-                                                                       GridBagConstraints gbc) {
-                            gbc.fill = GridBagConstraints.BOTH;
-                            gbc.weighty = 1.0;
-                            return gbc;
-                        }
-                    });
+            builder.addField(new JScrollPane(text), new StopperGridBagConstraintsChanger());
 
             receiversField.setBorder(new LineBorder(Color.GRAY));
 

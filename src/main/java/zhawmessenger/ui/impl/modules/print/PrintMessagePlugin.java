@@ -3,6 +3,7 @@ package zhawmessenger.ui.impl.modules.print;
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.message.MessageFactory;
 import zhawmessenger.messagesystem.api.modules.print.message.PrintJob;
+import zhawmessenger.messagesystem.api.modules.print.persistance.PrinterRepository;
 import zhawmessenger.messagesystem.impl.modules.print.message.PrintJobnImpl;
 import zhawmessenger.ui.api.*;
 import zhawmessenger.ui.api.form.DefaultSavableForm;
@@ -19,6 +20,13 @@ import java.util.UUID;
  */
 public class PrintMessagePlugin
         implements MessagePlugin<PrintJob> {
+
+    private PrinterRepository printerRepository;
+
+    public PrintMessagePlugin(PrinterRepository printerRepository) {
+        this.printerRepository = printerRepository;
+    }
+
     @Override
     public boolean doesHandle(Class<PrintJob> messageClass) {
         return PrintJob.class.isAssignableFrom(messageClass);
@@ -65,7 +73,7 @@ public class PrintMessagePlugin
             @Override
             public SavableForm<PrintJob> createForm(Window owner, PrintJob message) {
                 return new DefaultSavableForm<PrintJob>(
-                        new PrintForm(owner, message));
+                        new PrintForm(owner, message, printerRepository));
             }
         };
     }
