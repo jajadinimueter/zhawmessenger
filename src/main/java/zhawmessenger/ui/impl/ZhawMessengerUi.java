@@ -22,6 +22,8 @@ import zhawmessenger.ui.impl.modules.email.EmailMessagePlugin;
 import zhawmessenger.ui.impl.modules.mms.MmsMessagePlugin;
 import zhawmessenger.ui.impl.modules.print.PrintMessagePlugin;
 import zhawmessenger.ui.impl.modules.sms.SmsMessagePlugin;
+import zhawmessenger.ui.impl.queue.MessageComparator;
+import zhawmessenger.ui.impl.queue.MessageTableFormat;
 
 import javax.swing.*;
 import java.awt.*;
@@ -205,6 +207,7 @@ public class ZhawMessengerUi {
 
         mainToolbar.add(editButton);
         mainToolbar.add(sendNowButton);
+        mainToolbar.add(deleteButton);
 
         mainPanel.add(mainToolbar, BorderLayout.NORTH);
 

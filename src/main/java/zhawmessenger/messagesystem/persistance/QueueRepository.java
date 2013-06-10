@@ -1,5 +1,6 @@
 package zhawmessenger.messagesystem.persistance;
 
+import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.queue.MessageQueue;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 
@@ -10,11 +11,15 @@ import java.util.Collection;
  */
 public interface QueueRepository {
 
-    Collection<QueuedMessage> find();
+    Collection<? extends QueuedMessage> find();
 
     void markSending(QueuedMessage message);
 
     void markSent(QueuedMessage message);
 
-    void store(QueuedMessage message);
+    QueuedMessage create(Message message);
+
+    QueuedMessage get(Message message);
+
+    void delete(Message message);
 }

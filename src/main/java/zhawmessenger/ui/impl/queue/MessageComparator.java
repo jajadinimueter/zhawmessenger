@@ -1,4 +1,4 @@
-package zhawmessenger.ui.impl;
+package zhawmessenger.ui.impl.queue;
 
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 

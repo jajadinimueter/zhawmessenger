@@ -1,4 +1,4 @@
-package zhawmessenger.ui.impl;
+package zhawmessenger.ui.impl.queue;
 
 import ca.odell.glazedlists.gui.TableFormat;
 import zhawmessenger.messagesystem.api.message.Message;

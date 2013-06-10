@@ -5,15 +5,16 @@ import zhawmessenger.messagesystem.api.scheduler.Schedulable;
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.transport.SentMessage;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
  */
 public interface MessageQueue extends Schedulable {
 
-    void send(QueuedMessage message);
+    SentMessage send(Message message);
 
-    SentMessage send(QueuedMessage message, boolean force);
+    SentMessage send(Message message, boolean force);
 
     void sendAll();
 
@@ -28,31 +29,9 @@ public interface MessageQueue extends Schedulable {
      */
     QueuedMessage add(Message message);
 
-    /**
-     * Get by index inside queue
-     *
-     * @param index the numeric index. 0-based
-     * @return a queued message if found, null when
-     *      not found.
-     */
-    QueuedMessage get(int index);
-
-    /**
-     * Get by message-id
-     *
-     * @param id the message id to search for
-     * @return a queued message if found, null when
-     *      not found.
-     */
-    QueuedMessage getById(long id);
-
-    void remove(QueuedMessage message);
-
     void remove(Message message);
 
-    EventList<QueuedMessage> getQueuedMessages();
-
-    boolean contains(QueuedMessage message);
+    Collection<? extends QueuedMessage> getQueuedMessages();
 
     boolean contains(Message message);
 
