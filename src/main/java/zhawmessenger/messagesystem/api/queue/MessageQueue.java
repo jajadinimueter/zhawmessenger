@@ -35,4 +35,6 @@ public interface MessageQueue extends Schedulable {
 
     boolean contains(Message message);
 
+    QueuedMessage get(Message message);
+
 }

@@ -2,7 +2,7 @@ package zhawmessenger.messagesystem.impl.queue;
 
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
-import zhawmessenger.messagesystem.persistance.QueueRepository;
+import zhawmessenger.messagesystem.api.persistance.QueueRepository;
 
 import java.util.Collection;
 import java.util.List;

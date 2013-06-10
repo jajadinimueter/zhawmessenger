@@ -2,8 +2,8 @@ package zhawmessenger.messagesystem.impl.queue;
 
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
-import zhawmessenger.messagesystem.util.DefaultTimeProvider;
-import zhawmessenger.messagesystem.util.TimeProvider;
+import zhawmessenger.messagesystem.impl.util.DefaultTimeProvider;
+import zhawmessenger.messagesystem.impl.util.TimeProvider;
 
 import java.util.Date;
 import java.util.concurrent.locks.ReentrantLock;

@@ -1,4 +1,4 @@
-package zhawmessenger.messagesystem.persistance;
+package zhawmessenger.messagesystem.api.persistance;
 
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.queue.MessageQueue;

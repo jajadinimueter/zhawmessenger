@@ -7,9 +7,9 @@ import zhawmessenger.messagesystem.api.queue.NotSentException;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 import zhawmessenger.messagesystem.api.transport.SentMessage;
 import zhawmessenger.messagesystem.api.transport.Transport;
-import zhawmessenger.messagesystem.persistance.QueueRepository;
-import zhawmessenger.messagesystem.util.DefaultTimeProvider;
-import zhawmessenger.messagesystem.util.TimeProvider;
+import zhawmessenger.messagesystem.api.persistance.QueueRepository;
+import zhawmessenger.messagesystem.impl.util.DefaultTimeProvider;
+import zhawmessenger.messagesystem.impl.util.TimeProvider;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,8 +25,7 @@ public class MessageQueueImpl implements MessageQueue {
 
     public MessageQueueImpl(List<Transport> transports,
                             TimeProvider timeProvider,
-                            QueueRepository repository,
-                            EventList<QueuedMessage> messages) {
+                            QueueRepository repository) {
 
         this.repository = repository;
         this.transports = transports;
@@ -35,13 +34,11 @@ public class MessageQueueImpl implements MessageQueue {
 
     @SuppressWarnings("UnusedDeclaration")
     public MessageQueueImpl(List<Transport> transports,
-                            QueueRepository repository,
-                            EventList<QueuedMessage> messages) {
+                            QueueRepository repository) {
         this(
                 transports,
                 new DefaultTimeProvider(),
-                repository,
-                messages
+                repository
         );
     }
 
@@ -57,9 +54,7 @@ public class MessageQueueImpl implements MessageQueue {
         QueuedMessage message = repository.get(msg);
         try {
             if (message.tryLock()) {
-                if (!message.isSuspended() &&
-                        message.getState() != QueuedMessage.MessageState.SENT &&
-                        message.getState() != QueuedMessage.MessageState.SENDING) {
+                if (canBeSent(message)) {
                     if (force || msg.getSendTime() < this.timeProvider.getTime()) {
                         for (Transport transport : this.transports) {
                             //noinspection unchecked
@@ -89,12 +84,20 @@ public class MessageQueueImpl implements MessageQueue {
         this.sendAll(false);
     }
 
+    private boolean canBeSent(QueuedMessage message) {
+        return !message.isSuspended() &&
+                message.getState() != QueuedMessage.MessageState.SENT &&
+                message.getState() != QueuedMessage.MessageState.SENDING;
+    }
+
     /**
      * Delivers all messages which are
      */
     public void sendAll(boolean force) {
         for (QueuedMessage queuedMessage : getMessages()) {
-            this.send(queuedMessage.getMessage(), force);
+            if (canBeSent(queuedMessage)) {
+                this.send(queuedMessage.getMessage(), force);
+            }
         }
     }
 
@@ -129,6 +132,8 @@ public class MessageQueueImpl implements MessageQueue {
 
     @Override
     public void remove(Message message) {
+        QueuedMessage msg = this.get(message);
+        msg.suspend();
         repository.delete(message);
     }
 }

@@ -1,4 +1,4 @@
-package zhawmessenger.messagesystem.util;
+package zhawmessenger.messagesystem.impl.util;
 
 import java.util.Date;
 

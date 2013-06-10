@@ -13,8 +13,9 @@ import zhawmessenger.messagesystem.api.transport.Transport;
 import zhawmessenger.messagesystem.impl.modules.email.transport.FakeEmailTransportImpl;
 import zhawmessenger.messagesystem.impl.queue.MemoryQueueRepository;
 import zhawmessenger.messagesystem.impl.queue.MessageQueueImpl;
+import zhawmessenger.messagesystem.impl.queue.QueuedMessageImpl;
 import zhawmessenger.messagesystem.impl.scheduler.TimeIntervalScheduler;
-import zhawmessenger.messagesystem.persistance.QueueRepository;
+import zhawmessenger.messagesystem.api.persistance.QueueRepository;
 import zhawmessenger.ui.api.*;
 import zhawmessenger.ui.impl.components.JConsolePanel;
 import zhawmessenger.ui.impl.components.QueueTable;
@@ -30,6 +31,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -85,54 +87,30 @@ public class ZhawMessengerUi {
         final JPanel mainPanel;
         final JToolBar mainToolbar;
 
-        final EventList<QueuedMessage> queuedMessages = messageQueue.getQueuedMessages();
-//
-//        try {
-//            UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
-//        } catch (Exception e) {
-//            System.out.println("Unable to set native look and feel: " + e);
-//        }
+        final Collection<? extends QueuedMessage> initMessages
+                = messageQueue.getQueuedMessages();
 
-        // lock while creating the transformed models
-        queuedMessages.getReadWriteLock().readLock().lock();
-        try {
-//            UsersSelect usersSelect = new UsersSelect(issuesEventList);
-//
-//            userSelectList = usersSelect.getJList();
-//
-//            FilterList<Issue> userFilteredIssues =
-//                    new FilterList<Issue>(issuesEventList, usersSelect);
-//
-//            filterEdit = new JTextField(10);
-//
-//            FilterList<Issue> textFilteredIssues =
-//                    new FilterList<Issue>(userFilteredIssues,
-//                            new TextComponentMatcherEditor<Issue>(filterEdit,
-//                                    new IssueTextFilterator()));
-//
-//            priorityFilteredIssues =
-//                    new ThresholdList<Issue>(textFilteredIssues,
-//                            new IssuePriorityThresholdEvaluator());
+        final EventList<QueuedMessage> queuedMessages =
+                new BasicEventList<QueuedMessage>();
 
-            SortedList<QueuedMessage> sortedMessages =
-                    new SortedList<QueuedMessage>(queuedMessages,
-                            new MessageComparator());
+        queuedMessages.addAll(initMessages);
 
-            // create the issues table
-            AdvancedTableModel<QueuedMessage> messageTableModel =
-                    GlazedListsSwing.eventTableModelWithThreadProxyList(
-                            sortedMessages, new MessageTableFormat(messagePlugins));
+        SortedList<QueuedMessage> sortedMessages =
+                new SortedList<QueuedMessage>(queuedMessages,
+                        new MessageComparator());
 
-            messageTable = new QueueTable(messageTableModel);
+        // create the issues table
+        AdvancedTableModel<QueuedMessage> messageTableModel =
+                GlazedListsSwing.eventTableModelWithThreadProxyList(
+                        sortedMessages, new MessageTableFormat(messagePlugins));
 
-            //noinspection UnusedDeclaration
-            TableComparatorChooser<QueuedMessage> tableSorter = TableComparatorChooser.install(
-                    messageTable, sortedMessages, TableComparatorChooser.MULTIPLE_COLUMN_MOUSE);
+        messageTable = new QueueTable(messageTableModel);
 
-            queueScrollPane = new JScrollPane(messageTable);
-        } finally {
-            queuedMessages.getReadWriteLock().readLock().unlock();
-        }
+        //noinspection UnusedDeclaration
+        TableComparatorChooser<QueuedMessage> tableSorter = TableComparatorChooser.install(
+                messageTable, sortedMessages, TableComparatorChooser.MULTIPLE_COLUMN_MOUSE);
+
+        queueScrollPane = new JScrollPane(messageTable);
 
         // create the menu structure
         mainMenuBar = new JMenuBar();
@@ -182,12 +160,8 @@ public class ZhawMessengerUi {
             public void actionPerformed(ActionEvent e) {
                 int selCol = messageTable.getSelectedColumn();
                 if (selCol >= 0) {
-                    // set send time to now, the message is
-                    // sent asap
-                    QueuedMessage message =
-                            queuedMessages.get(selCol);
-                    Message msg = message.getMessage();
-                    msg.setSendTime(new Date().getTime());
+                    QueuedMessage msg = queuedMessages.get(selCol);
+                    messageQueue.send(msg.getMessage());
                 }
             }
         });
@@ -199,8 +173,7 @@ public class ZhawMessengerUi {
                 int selCol = messageTable.getSelectedColumn();
                 if (selCol >= 0) {
                     QueuedMessage queuedMessage = queuedMessages.get(selCol);
-                    queuedMessage.suspend();
-                    messageQueue.remove(queuedMessage);
+                    messageQueue.remove(queuedMessage.getMessage());
                 }
             }
         });
@@ -258,9 +231,8 @@ public class ZhawMessengerUi {
         List<Transport> transports = new ArrayList<Transport>();
         transports.add(new FakeEmailTransportImpl(consolePanel));
 
-        EventList<QueuedMessage> messages = new BasicEventList<QueuedMessage>();
-        QueueRepository repository = new MemoryQueueRepository(messages);
-        MessageQueue queue = new MessageQueueImpl(transports, repository, messages);
+        QueueRepository repository = new MemoryQueueRepository(new ArrayList<QueuedMessageImpl>());
+        MessageQueue queue = new MessageQueueImpl(transports, repository);
 
         scheduler.startSchedule(queue);
 

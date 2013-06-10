@@ -1,4 +1,4 @@
-package zhawmessenger.messagesystem.util;
+package zhawmessenger.messagesystem.impl.util;
 
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.util.SentMessageLogger;
