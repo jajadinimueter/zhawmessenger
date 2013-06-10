@@ -1,12 +1,13 @@
 package zhawmessenger.messagesystem.api.message;
 
 import zhawmessenger.messagesystem.api.contact.Contact;
+import zhawmessenger.messagesystem.api.persistance.IdObject;
 
 import java.util.List;
 
 /**
  */
-public interface Message<R extends Contact> {
+public interface Message<R extends Contact> extends IdObject {
 
     /**
      * Returns an ID with uniqually identifies
@@ -14,8 +15,6 @@ public interface Message<R extends Contact> {
      *
      * @return an ID
      */
-    Object getId();
-
     long getSendTime();
 
     void setSendTime(long time);

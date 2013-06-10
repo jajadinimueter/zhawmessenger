@@ -13,6 +13,10 @@ import java.util.List;
  */
 public class SmsImpl extends AbstractMessage<MobilePhoneContact> implements Sms {
 
+    public SmsImpl(Object id) {
+        super(id);
+    }
+
     @Override
     public boolean isValid() {
         // FIXME

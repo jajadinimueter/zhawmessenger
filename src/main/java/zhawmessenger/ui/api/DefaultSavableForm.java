@@ -19,20 +19,15 @@ public class DefaultSavableForm<T extends Message>
     private MessageForm<T> formPanel;
     private final JPanel mainPanel;
 
-    private final Window owner;
-    private final JPanel buttonPanel;
     private final List<SaveListener> saveListeners;
     private final List<CancelListener> cancelListeners;
-    private final T message;
 
-    public DefaultSavableForm(Window owner, MessageForm<T> formPanel, T message) {
-        this.message = message;
-        this.owner = owner;
+    public DefaultSavableForm(MessageForm<T> formPanel) {
         this.formPanel = formPanel;
 
         mainPanel = new JPanel();
 
-        buttonPanel = buildButtonPanel();
+        JPanel buttonPanel = buildButtonPanel();
 
         saveListeners = new ArrayList<SaveListener>();
         cancelListeners = new ArrayList<CancelListener>();

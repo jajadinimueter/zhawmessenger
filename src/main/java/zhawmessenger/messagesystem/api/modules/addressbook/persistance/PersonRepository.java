@@ -12,8 +12,9 @@ public interface PersonRepository {
 
     Collection<Person> find(String name, boolean startsWith);
 
+    Person findByUsername(String username);
+
     void store(Person person);
 
     void delete(Person person);
-
 }

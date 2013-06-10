@@ -59,7 +59,7 @@ public class MessageQueueImpl implements MessageQueue {
     public SentMessage send(QueuedMessage message, boolean force) {
         try {
             if (message.tryLock()) {
-                if (!message.isSuspended()) {
+                if (!message.isSuspended() && !message.isSent()) {
                     Message msg = message.getMessage();
                     if (force || msg.getSendTime() < this.timeProvider.getTime()) {
                         for (Transport transport : this.transports) {
@@ -72,6 +72,7 @@ public class MessageQueueImpl implements MessageQueue {
                                 //noinspection unchecked
                                 SentMessage sentMessage = transport.send(msg);
                                 repository.markSent(message);
+                                return sentMessage;
                             }
                         }
                     }

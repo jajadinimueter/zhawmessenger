@@ -3,6 +3,7 @@ package zhawmessenger.messagesystem.api.message;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import zhawmessenger.messagesystem.api.contact.Contact;
+import zhawmessenger.messagesystem.api.persistance.AbstractIdObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,19 +11,16 @@ import java.util.UUID;
 
 /**
  */
-public abstract class AbstractMessage<R extends Contact> implements Message<R> {
+public abstract class AbstractMessage<R extends Contact>
+        extends AbstractIdObject implements Message<R> {
+
     private String text;
     private long sendTime;
-    private final UUID id;
 
     private final List<R> receivers = new ArrayList<R>();
 
-    public AbstractMessage() {
-        this.id = UUID.randomUUID();
-    }
-
-    public Object getId() {
-        return this.id;
+    public AbstractMessage(Object id) {
+        super(id);
     }
 
     @Override

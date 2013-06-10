@@ -2,15 +2,33 @@ package zhawmessenger.ui.impl.modules.email;
 
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.message.MessageFactory;
+import zhawmessenger.messagesystem.api.modules.addressbook.persistance.GroupRepository;
+import zhawmessenger.messagesystem.api.modules.addressbook.persistance.PersonRepository;
 import zhawmessenger.messagesystem.api.modules.email.message.Email;
+import zhawmessenger.messagesystem.api.modules.email.persistance.EmailContactRepository;
 import zhawmessenger.messagesystem.impl.modules.email.message.EmailImpl;
 import zhawmessenger.ui.api.*;
 
 import javax.swing.*;
+import java.util.UUID;
 
 /**
  */
 public class EmailMessagePlugin implements MessagePlugin<Email> {
+
+    private EmailContactRepository contactRepository;
+    private PersonRepository personRepository;
+    private GroupRepository groupRepository;
+
+    public EmailMessagePlugin(EmailContactRepository contactRepository,
+                              PersonRepository personRepository,
+                              GroupRepository groupRepository) {
+
+        this.contactRepository = contactRepository;
+        this.personRepository = personRepository;
+        this.groupRepository = groupRepository;
+
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -32,18 +50,35 @@ public class EmailMessagePlugin implements MessagePlugin<Email> {
     }
 
     @Override
+    public ItemFormatter<Email> getPreviewFormatter() {
+        return new ItemFormatter<Email>() {
+            @Override
+            public String format(Email message) {
+                return String.format("<html>" +
+                        "<b>Subject</b>: %s <br>" +
+                        "<b>Receivers</b>: %s <br>" +
+                        "<p>%s</p>" +
+                        "</html>",
+                        message.getSubject(),
+                        message.getReceivers(),
+                        message.getText());
+            }
+        };
+    }
+
+    @Override
     public MessageFactory getMessageFactory() {
         return new MessageFactory() {
             @Override
             public Message createMessage() {
-                return new EmailImpl();
+                return new EmailImpl(UUID.randomUUID());
             }
         };
     }
 
     @Override
     public MessageFormFactory getFormFactory() {
-        return new EmailFormFactory();
+        return new EmailFormFactory(contactRepository);
     }
 
     public MessageWindowFactory getWindowFactory() {

@@ -2,7 +2,8 @@ package zhawmessenger.messagesystem.impl.modules.addressbook.persistance;
 
 import zhawmessenger.messagesystem.api.modules.addressbook.Person;
 import zhawmessenger.messagesystem.api.modules.addressbook.persistance.PersonRepository;
-import zhawmessenger.messagesystem.impl.modules.addressbook.PersonImpl;
+import zhawmessenger.messagesystem.api.modules.auth.Principal;
+import zhawmessenger.messagesystem.impl.AbstractMemoryRepository;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -10,16 +11,11 @@ import java.util.Set;
 
 /**
  */
-public class MemoryPersonRepository implements PersonRepository {
+public class MemoryPersonRepository extends AbstractMemoryRepository<Person>
+        implements PersonRepository {
 
-    private Set<Person> people;
-
-    public MemoryPersonRepository() {
-        this(new HashSet<Person>());
-    }
-
-    public MemoryPersonRepository(Set<Person> people) {
-        this.people = people;
+    public MemoryPersonRepository(Collection<Person> items) {
+        super(items);
     }
 
     @Override
@@ -30,7 +26,7 @@ public class MemoryPersonRepository implements PersonRepository {
     @Override
     public Collection<Person> find(String name, boolean startsWith) {
         final Set<Person> found = new HashSet<Person>();
-        for (Person person : people) {
+        for (Person person : items) {
             if (startsWith) {
                 if (person.getName().indexOf(name) == 0) {
                     found.add(person);
@@ -45,14 +41,28 @@ public class MemoryPersonRepository implements PersonRepository {
     }
 
     @Override
+    public Person findByUsername(String username) {
+        for (Person p : items) {
+            Principal pri = p.getPrincipal();
+            if (pri != null) {
+                if (pri.getUsername().equals(username)) {
+                    return p;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
     public void store(Person person) {
-        if (!this.people.contains(person)) {
-            this.people.add(person);
+        if (!this.items.contains(person)) {
+            this.items.add(person);
         }
     }
 
     @Override
     public void delete(Person person) {
-        this.people.remove(person);
+        this.items.remove(person);
     }
+
 }

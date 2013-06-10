@@ -3,15 +3,27 @@ package zhawmessenger.messagesystem.impl.modules.email.contact;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import zhawmessenger.messagesystem.api.contact.AbstractContact;
+import zhawmessenger.messagesystem.api.contact.Contact;
 import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
+import zhawmessenger.messagesystem.api.modules.email.message.Email;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  */
 public class EmailContactImpl extends AbstractContact
         implements EmailContact {
 
-    public EmailContactImpl(String value) {
-        super(value);
+    public EmailContactImpl(Object id, String value) {
+        super(id, value);
+    }
+
+    @Override
+    protected Class<? extends Contact> getContactClass() {
+        return EmailContact.class;
     }
 
     @Override

@@ -11,11 +11,11 @@ import java.util.Date;
 
 /**
  */
-public class EmailTransportImpl implements EmailTransport {
+public class FakeEmailTransportImpl implements EmailTransport {
 
     private SentMessageLogger logger;
 
-    public EmailTransportImpl(SentMessageLogger logger) {
+    public FakeEmailTransportImpl(SentMessageLogger logger) {
         this.logger = logger;
     }
 

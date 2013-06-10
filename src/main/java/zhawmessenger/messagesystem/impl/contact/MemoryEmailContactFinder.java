@@ -1,32 +1,30 @@
 package zhawmessenger.messagesystem.impl.contact;
 
+import zhawmessenger.messagesystem.api.contact.Contact;
+import zhawmessenger.messagesystem.api.contact.DisplayableContactProvider;
 import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
+import zhawmessenger.messagesystem.api.modules.email.persistance.EmailContactRepository;
+import zhawmessenger.messagesystem.api.modules.email.persistance.EmailRepository;
 import zhawmessenger.messagesystem.api.util.Finder;
 
 import java.util.*;
 
 /**
  */
-public class MemoryEmailContactFinder implements Finder<String, EmailContact> {
+public class MemoryEmailContactFinder implements Finder<String, DisplayableContactProvider> {
 
-    private Collection<EmailContact> contacts;
+    private EmailContactRepository repository;
 
-    public MemoryEmailContactFinder(Collection<EmailContact> contacts) {
-        this.contacts = contacts;
+    public MemoryEmailContactFinder(EmailContactRepository repository) {
+        this.repository = repository;
     }
 
     @Override
-    public Set<EmailContact> find(String... findArgs) {
-        final Set<EmailContact> foundContacts =
-                new HashSet<EmailContact>();
-        if (this.contacts != null) {
-            for (EmailContact contact : this.contacts) {
-                for (String arg : findArgs) {
-                    if (contact.getValue().contains(arg.trim())) {
-                        foundContacts.add(contact);
-                    }
-                }
-            }
+    public Set<DisplayableContactProvider> find(String... findArgs) {
+        final Set<DisplayableContactProvider> foundContacts =
+                new HashSet<DisplayableContactProvider>();
+        for (String searchString : findArgs) {
+            foundContacts.addAll(this.repository.find(searchString, true));
         }
         return foundContacts;
     }

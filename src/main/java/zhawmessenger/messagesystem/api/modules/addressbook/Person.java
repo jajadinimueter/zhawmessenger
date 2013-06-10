@@ -1,13 +1,17 @@
 package zhawmessenger.messagesystem.api.modules.addressbook;
 
+import zhawmessenger.messagesystem.api.contact.ContactProvider;
+import zhawmessenger.messagesystem.api.contact.DisplayableContactProvider;
+import zhawmessenger.messagesystem.api.modules.auth.Principal;
 import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
 import zhawmessenger.messagesystem.api.modules.mobilephone.contact.MobilePhoneContact;
+import zhawmessenger.messagesystem.api.persistance.IdObject;
 
 import java.util.Collection;
 
 /**
  */
-public interface Person {
+public interface Person extends IdObject, DisplayableContactProvider {
 
     String getName();
 
@@ -24,5 +28,7 @@ public interface Person {
     void removeEmailContacat(EmailContact contact);
 
     void removeMobilePhoneContact(MobilePhoneContact contact);
+
+    Principal getPrincipal();
 
 }

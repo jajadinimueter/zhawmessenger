@@ -10,14 +10,18 @@ import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.queue.MessageQueue;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 import zhawmessenger.messagesystem.api.transport.Transport;
-import zhawmessenger.messagesystem.impl.modules.email.transport.EmailTransportImpl;
+import zhawmessenger.messagesystem.impl.modules.email.transport.FakeEmailTransportImpl;
 import zhawmessenger.messagesystem.impl.queue.MemoryQueueRepository;
 import zhawmessenger.messagesystem.impl.queue.MessageQueueImpl;
 import zhawmessenger.messagesystem.impl.scheduler.TimeIntervalScheduler;
 import zhawmessenger.messagesystem.persistance.QueueRepository;
 import zhawmessenger.ui.api.*;
 import zhawmessenger.ui.impl.components.JConsolePanel;
+import zhawmessenger.ui.impl.components.QueueTable;
 import zhawmessenger.ui.impl.modules.email.EmailMessagePlugin;
+import zhawmessenger.ui.impl.modules.mms.MmsMessagePlugin;
+import zhawmessenger.ui.impl.modules.print.PrintMessagePlugin;
+import zhawmessenger.ui.impl.modules.sms.SmsMessagePlugin;
 
 import javax.swing.*;
 import java.awt.*;
@@ -115,9 +119,9 @@ public class ZhawMessengerUi {
             // create the issues table
             AdvancedTableModel<QueuedMessage> messageTableModel =
                     GlazedListsSwing.eventTableModelWithThreadProxyList(
-                            sortedMessages, new MessageTableFormat());
+                            sortedMessages, new MessageTableFormat(messagePlugins));
 
-            messageTable = new JTable(messageTableModel);
+            messageTable = new QueueTable(messageTableModel);
 
             //noinspection UnusedDeclaration
             TableComparatorChooser<QueuedMessage> tableSorter = TableComparatorChooser.install(
@@ -220,15 +224,36 @@ public class ZhawMessengerUi {
         final JConsolePanel consolePanel = new JConsolePanel();
         final TimeIntervalScheduler scheduler = new TimeIntervalScheduler(1000);
 
+        UglyContactsCreationFactory repositoryFactory =
+                UglyContactsCreationFactory.getInstance();
+
+        // this is a little bit ugly...
+        DefaultApplicationContext applicationContext =
+                DefaultApplicationContext.getInstance();
+
+        applicationContext.setUserLoggedIn(repositoryFactory.getFmueller());
+
         List<MessagePlugin> plugins =
                 new ArrayList<MessagePlugin>();
 
-        MessagePlugin emailMessagePlugin = new EmailMessagePlugin();
+        MessagePlugin printMessagePlugin = new PrintMessagePlugin();
 
+        MessagePlugin smsMessagePlugin = new SmsMessagePlugin();
+
+        MessagePlugin mmsMessagePlugin = new MmsMessagePlugin();
+
+        MessagePlugin emailMessagePlugin = new EmailMessagePlugin(
+                repositoryFactory.getEmailContactRepository(),
+                repositoryFactory.getPersonRepository(),
+                repositoryFactory.getGroupRepository());
+
+        plugins.add(smsMessagePlugin);
+        plugins.add(mmsMessagePlugin);
         plugins.add(emailMessagePlugin);
+        plugins.add(printMessagePlugin);
 
         List<Transport> transports = new ArrayList<Transport>();
-        transports.add(new EmailTransportImpl(consolePanel));
+        transports.add(new FakeEmailTransportImpl(consolePanel));
 
         EventList<QueuedMessage> messages = new BasicEventList<QueuedMessage>();
         QueueRepository repository = new MemoryQueueRepository(messages);

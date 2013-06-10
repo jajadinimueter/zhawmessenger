@@ -1,19 +1,22 @@
 package zhawmessenger.ui.impl.modules.email;
 
+import zhawmessenger.messagesystem.api.contact.Contact;
+import zhawmessenger.messagesystem.api.contact.DisplayableContactProvider;
 import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
 import zhawmessenger.messagesystem.api.modules.email.message.Email;
+import zhawmessenger.messagesystem.api.modules.email.persistance.EmailContactRepository;
+import zhawmessenger.messagesystem.api.remind.Reminder;
 import zhawmessenger.messagesystem.api.util.Finder;
 import zhawmessenger.messagesystem.impl.contact.MemoryEmailContactFinder;
 import zhawmessenger.messagesystem.impl.modules.email.contact.EmailContactImpl;
-import zhawmessenger.ui.api.AbstractFormFactory;
-import zhawmessenger.ui.api.DefaultSavableForm;
-import zhawmessenger.ui.api.MessageForm;
-import zhawmessenger.ui.api.SavableForm;
+import zhawmessenger.messagesystem.impl.modules.email.persistance.MemoryEmailContactRepository;
+import zhawmessenger.ui.api.*;
 import zhawmessenger.ui.api.form.FormBuilder;
 import zhawmessenger.ui.api.form.FormBuilderConstraints;
 import zhawmessenger.ui.api.form.GridBagConstraintsChanger;
 import zhawmessenger.ui.api.form.GridBagConstraintsChangerAdapter;
-import zhawmessenger.ui.impl.components.ComponentFactory;
+import zhawmessenger.ui.impl.DefaultApplicationContext;
+import zhawmessenger.ui.impl.components.*;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -30,40 +33,60 @@ import java.util.List;
 public class EmailFormFactory
         extends AbstractFormFactory<Email> {
 
+    private EmailContactRepository contactRepository;
+
+    public EmailFormFactory(EmailContactRepository contactRepository) {
+        this.contactRepository = contactRepository;
+    }
+
     @Override
     public SavableForm<Email> createForm(final Window owner, final Email message) {
         // build the actual form
-        return new DefaultSavableForm<Email>(
-                owner, new EmailForm(owner, message), message);
+        return new DefaultSavableForm<Email>(new EmailForm(owner, message));
     }
 
     class EmailForm extends MessageForm<Email> {
-        private final List<Finder<String, EmailContact>> finders;
-        private final Window owner;
-        private final Email message;
+        private final ArrayList<Finder<String, DisplayableContactProvider>> finders;
+
+        private ApplicationContext appContext;
+        private JComboBox senderField;
+        private ReceiverTextArea receiverTextArea;
+        private JTextArea text;
+        private JCheckBox sendImmediately;
+        private DateTimeChooser sendAtChooser;
+        private JCheckBox noReminder;
+        private DateTimeChooser remindDateChooser;
+
 
         public EmailForm(Window owner, Email message) {
-            this.message = message;
-            this.owner = owner;
-            this.finders = new ArrayList<Finder<String, EmailContact>>();
+            super(owner, message)
+            ;
+            this.finders = new ArrayList<Finder<String, DisplayableContactProvider>>();
 
-            ArrayList<EmailContact> contacts = new ArrayList<EmailContact>();
-            contacts.add(new EmailContactImpl("foo@bar.ch"));
-            contacts.add(new EmailContactImpl("bar@baz.ch"));
-            this.finders.add(new MemoryEmailContactFinder(contacts));
+            appContext = DefaultApplicationContext.getInstance();
+
+            this.finders.add(new MemoryEmailContactFinder(contactRepository));
 
             this.buildForm();
-//            this.buildFormPanel();
+        }
+
+        @Override
+        public Email getSavedMessage() {
+            message.setSender((EmailContact) senderField.getModel().getSelectedItem());
+            message.setText(text.getText());
+//            message.setSendTime(sendAtChooser.getDate().getTime());
+            return this.getMessage();
         }
 
         protected void buildForm() {
-            FormBuilder builder = new FormBuilder(this, false);
+            FormBuilder builder = new FormBuilder(this, new Insets(3,3,3,3), false);
 
-            JTextField senderField = builder.addComponent(new JLabel("Absender"),
-                    new JTextField());
+            senderField = builder.addComponent(new JLabel("Absender"),
+                    new SenderField<EmailContact>(
+                            appContext.getUserLoggedIn().getEmailContacts()));
 
             JScrollPane receiversField = builder.addComponent(new JLabel("Empfänger"),
-                    new JScrollPane(new EmailReceiverTextArea(owner, finders, 1, 1)),
+                    new JScrollPane(new ReceiverTextArea(owner, finders, 1, 1)),
                     new GridBagConstraintsChangerAdapter() {
                         @Override
                         public GridBagConstraints changeField(Component field, GridBagConstraints gbc) {
@@ -85,28 +108,9 @@ public class EmailFormFactory
             FormBuilderConstraints leftAlign = new FormBuilderConstraints(
                     FormBuilderConstraints.Align.LEFT);
 
-            // send at
-            FormBuilder sendAtBuilder = new FormBuilder();
-            JCheckBox sendImmediately = sendAtBuilder.addField(
-                    new JCheckBox("Sofort"),
-                    leftAlign);
-            JPanel sendAtDatePanel = sendAtBuilder.addField(
-                    ComponentFactory.buildDatePanel(new Date()),
-                    leftAlign);
-            builder.addComponent(new JLabel("Versenden am"), sendAtBuilder.getPanel());
-
-            // reminder
-            FormBuilder remindAtBuilder = new FormBuilder();
-            JCheckBox noReminder = remindAtBuilder.addField(
-                    new JCheckBox("Keine Erinnerung"),
-                    leftAlign);
-            JPanel remindDatePanel = remindAtBuilder.addField(
-                    ComponentFactory.buildDatePanel(new Date()),
-                    leftAlign);
-            builder.addComponent(new JLabel("Erinnerung am"), remindAtBuilder.getPanel());
-
             // text
-            JScrollPane text = builder.addField(new JScrollPane(new JTextArea(1, 1)),
+            text = new JTextArea(1, 1);
+            builder.addField(new JScrollPane(text),
                     new GridBagConstraintsChangerAdapter() {
                         @Override
                         public GridBagConstraints changeField(Component field, GridBagConstraints gbc) {
@@ -125,82 +129,8 @@ public class EmailFormFactory
                     });
 
             receiversField.setBorder(new LineBorder(Color.GRAY));
-        }
 
-        protected void buildFormPanel() {
-            Border border = BorderFactory.createLineBorder(Color.gray);
-
-            this.setLayout(new BorderLayout());
-
-            this.setLayout(new GridBagLayout());
-
-            GridBagConstraints gbc = new GridBagConstraints();
-
-            gbc.anchor = GridBagConstraints.NORTH;
-            gbc.fill = GridBagConstraints.BOTH;
-            gbc.insets = new Insets(5, 5, 5, 5);
-            gbc.weightx = 1.0;
-            gbc.gridwidth = 2;
-
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            this.add(new JLabel("Absender"), gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 1;
-            this.add(new JComboBox(new DefaultComboBoxModel(
-                    new String[]{"Foo", "Bar"})), gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 2;
-            this.add(new JLabel("Empfänger"), gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 3;
-            gbc.weighty = 1.0;
-            gbc.weightx = 0.2;
-            JTextArea reciepients = new EmailReceiverTextArea(
-                    this.owner, this.finders, 10, 1);
-            reciepients.setBorder(border);
-            this.add(reciepients, gbc);
-            gbc.weighty = 0.0;
-            gbc.weightx = 0.0;
-
-            gbc.gridx = 0;
-            gbc.gridy = 4;
-            this.add(ComponentFactory.buildDatePanel(new Date()), gbc);
-//            form.add(new JFormattedTextField(new SimpleDateFormat("dd.mm.yyyy hh:mm")), gbc);
-//            form.add(new JLabel("Sendedatum"));
-//            form.add(new JLabel("Anhänge"), gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 5;
-            gbc.gridwidth = 1;
-            gbc.weightx = 0.8;
-            this.add(new JTextField(), gbc);
-
-            gbc.gridx = 1;
-            gbc.weightx = 0.2;
-            this.add(new JButton("Datei"), gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 6;
-            gbc.gridwidth = 2;
-            this.add(new JLabel("Text"), gbc);
-
-            gbc.gridy = 7;
-            gbc.weighty = 1.0;
-            final JTextArea text = new JTextArea(15, 1);
-            text.setText(this.getMessage().getText());
-            text.setBorder(border);
-            this.add(text, gbc);
-            gbc.weighty = 0.0;
-        }
-
-        @Override
-        public Email getSavedMessage() {
-            // fixme: save message
-            return this.getMessage();
+            SendAtPanel sendAtPanel = builder.addField(new SendAtPanel());
         }
 
         @Override

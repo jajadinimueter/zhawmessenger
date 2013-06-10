@@ -6,6 +6,10 @@ import zhawmessenger.messagesystem.api.message.Message;
  */
 public interface QueuedMessage {
 
+    boolean isSent();
+
+    void setSent(boolean sent);
+
     boolean isLocked();
 
     boolean tryLock();

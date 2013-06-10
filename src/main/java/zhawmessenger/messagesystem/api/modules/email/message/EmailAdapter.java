@@ -1,17 +1,24 @@
 package zhawmessenger.messagesystem.api.modules.email.message;
 
 import zhawmessenger.messagesystem.api.message.AbstractMessage;
+import zhawmessenger.messagesystem.api.message.AbstractRemindableMessage;
 import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
 
 import java.util.List;
 
 /**
  */
-public class EmailAdapter extends AbstractMessage<EmailContact> implements Email {
+public class EmailAdapter
+        extends AbstractRemindableMessage<EmailContact> implements Email {
+
     private String subject;
     private EmailContact sender;
     private List<EmailContact> bccs;
     private List<EmailContact> ccs;
+
+    public EmailAdapter(Object id) {
+        super(id);
+    }
 
     @Override
     public void setSubject(String subject) {

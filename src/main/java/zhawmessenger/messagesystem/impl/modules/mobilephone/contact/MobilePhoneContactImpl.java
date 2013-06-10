@@ -3,6 +3,7 @@ package zhawmessenger.messagesystem.impl.modules.mobilephone.contact;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import zhawmessenger.messagesystem.api.contact.AbstractContact;
+import zhawmessenger.messagesystem.api.contact.Contact;
 import zhawmessenger.messagesystem.api.modules.mobilephone.contact.MobilePhoneContact;
 
 /**
@@ -43,5 +44,10 @@ public class MobilePhoneContactImpl extends AbstractContact implements MobilePho
         return new HashCodeBuilder(17, 101)
                 .append(this.getValue())
                 .toHashCode();
+    }
+
+    @Override
+    protected Class<? extends Contact> getContactClass() {
+        return MobilePhoneContact.class;
     }
 }

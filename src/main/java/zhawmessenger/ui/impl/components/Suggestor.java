@@ -1,5 +1,6 @@
 package zhawmessenger.ui.impl.components;
 
+import zhawmessenger.messagesystem.api.contact.Contact;
 import zhawmessenger.messagesystem.api.util.Finder;
 
 import javax.swing.*;
@@ -133,9 +134,10 @@ public class Suggestor<T> implements KeyListener, DocumentListener {
         Point pt = textComponent.getCaret().getMagicCaretPosition();
 
         if (pt != null) {
+            System.out.println(String.format("Point %f, %f", pt.getX(), pt.getY()));
             tableModel.replace(items);
-            double x = owner.getX() + textComponent.getX() + pt.getX();
-            double y = owner.getY() + textComponent.getY() + pt.getY() + 20;
+            double x = owner.getX() + textComponent.getX() + pt.getX() + 10;
+            double y = owner.getY() + textComponent.getY() + pt.getY() + 50;
             choicesDialog.setLocation((int)x, (int)y);
             if (items.size() > 0) {
                 choicesList.setRowSelectionInterval(0,0);

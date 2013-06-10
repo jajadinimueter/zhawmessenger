@@ -12,6 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class QueuedMessageImpl implements QueuedMessage {
 
+    private boolean sent = false;
     private long timeQueued = 0;
     private long timeSuspendedUntil = 0;
     private ReentrantLock lock = new ReentrantLock();
@@ -29,6 +30,15 @@ public class QueuedMessageImpl implements QueuedMessage {
         this.message = message;
         this.timeProvider = timeProvider;
         this.timeQueued = new Date().getTime();
+    }
+
+    @Override
+    public boolean isSent() {
+        return sent;
+    }
+
+    public void setSent(boolean sent) {
+        this.sent = sent;
     }
 
     @Override
