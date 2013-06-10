@@ -15,8 +15,11 @@ import zhawmessenger.messagesystem.impl.queue.MemoryQueueRepository;
 import zhawmessenger.messagesystem.impl.queue.MessageQueueImpl;
 import zhawmessenger.messagesystem.impl.queue.QueuedMessageImpl;
 import zhawmessenger.messagesystem.impl.scheduler.TimeIntervalScheduler;
-import zhawmessenger.messagesystem.api.persistance.QueueRepository;
+import zhawmessenger.messagesystem.api.queue.persistance.QueueRepository;
 import zhawmessenger.ui.api.*;
+import zhawmessenger.ui.api.form.MessageFormFactory;
+import zhawmessenger.ui.api.form.SavableForm;
+import zhawmessenger.ui.api.plugin.MessagePlugin;
 import zhawmessenger.ui.impl.components.JConsolePanel;
 import zhawmessenger.ui.impl.components.QueueTable;
 import zhawmessenger.ui.impl.modules.email.EmailMessagePlugin;
@@ -25,6 +28,7 @@ import zhawmessenger.ui.impl.modules.print.PrintMessagePlugin;
 import zhawmessenger.ui.impl.modules.sms.SmsMessagePlugin;
 import zhawmessenger.ui.impl.queue.MessageComparator;
 import zhawmessenger.ui.impl.queue.MessageTableFormat;
+import zhawmessenger.ui.impl.queue.QueueTableModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +36,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -41,6 +44,8 @@ public class ZhawMessengerUi {
 
     private final List<MessagePlugin> messagePlugins;
     private final MessageQueue messageQueue;
+
+    private EventList<QueuedMessage> queuedMessages;
 
     public ZhawMessengerUi(List<MessagePlugin> messagePlugins,
                            MessageQueue messageQueue) {
@@ -64,7 +69,8 @@ public class ZhawMessengerUi {
         savableForm.addSaveListener(new SaveListener() {
             @Override
             public void saved(Message message) {
-                messageQueue.add(message);
+                QueuedMessage m = messageQueue.add(message);
+                queuedMessages.add(m);
             }
         });
         savableForm.addCancelListener(new CancelListener() {
@@ -90,25 +96,12 @@ public class ZhawMessengerUi {
         final Collection<? extends QueuedMessage> initMessages
                 = messageQueue.getQueuedMessages();
 
-        final EventList<QueuedMessage> queuedMessages =
-                new BasicEventList<QueuedMessage>();
+        queuedMessages = new BasicEventList<QueuedMessage>();
 
         queuedMessages.addAll(initMessages);
 
-        SortedList<QueuedMessage> sortedMessages =
-                new SortedList<QueuedMessage>(queuedMessages,
-                        new MessageComparator());
-
-        // create the issues table
-        AdvancedTableModel<QueuedMessage> messageTableModel =
-                GlazedListsSwing.eventTableModelWithThreadProxyList(
-                        sortedMessages, new MessageTableFormat(messagePlugins));
-
-        messageTable = new QueueTable(messageTableModel);
-
-        //noinspection UnusedDeclaration
-        TableComparatorChooser<QueuedMessage> tableSorter = TableComparatorChooser.install(
-                messageTable, sortedMessages, TableComparatorChooser.MULTIPLE_COLUMN_MOUSE);
+        messageTable = new QueueTable(
+                new QueueTableModel(messageQueue, messagePlugins));
 
         queueScrollPane = new JScrollPane(messageTable);
 

@@ -1,6 +1,9 @@
-package zhawmessenger.ui.api;
+package zhawmessenger.ui.api.util;
 
 import zhawmessenger.messagesystem.api.message.Message;
+import zhawmessenger.ui.api.CancelListener;
+import zhawmessenger.ui.api.MessageWindowFactory;
+import zhawmessenger.ui.api.SaveListener;
 
 import javax.swing.*;
 import java.awt.*;

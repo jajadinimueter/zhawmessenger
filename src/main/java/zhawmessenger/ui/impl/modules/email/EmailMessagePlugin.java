@@ -8,6 +8,9 @@ import zhawmessenger.messagesystem.api.modules.email.message.Email;
 import zhawmessenger.messagesystem.api.modules.email.persistance.EmailContactRepository;
 import zhawmessenger.messagesystem.impl.modules.email.message.EmailImpl;
 import zhawmessenger.ui.api.*;
+import zhawmessenger.ui.api.form.MessageFormFactory;
+import zhawmessenger.ui.api.plugin.MessagePlugin;
+import zhawmessenger.ui.api.util.DefaultMessageWindowFactory;
 
 import javax.swing.*;
 import java.util.UUID;

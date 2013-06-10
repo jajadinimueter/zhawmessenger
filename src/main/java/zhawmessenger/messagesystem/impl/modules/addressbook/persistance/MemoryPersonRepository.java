@@ -3,7 +3,7 @@ package zhawmessenger.messagesystem.impl.modules.addressbook.persistance;
 import zhawmessenger.messagesystem.api.modules.addressbook.Person;
 import zhawmessenger.messagesystem.api.modules.addressbook.persistance.PersonRepository;
 import zhawmessenger.messagesystem.api.modules.auth.Principal;
-import zhawmessenger.messagesystem.impl.AbstractMemoryRepository;
+import zhawmessenger.messagesystem.impl.persistance.AbstractMemoryRepository;
 
 import java.util.Collection;
 import java.util.HashSet;

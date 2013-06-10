@@ -2,7 +2,7 @@ package zhawmessenger.messagesystem.impl.modules.email.persistance;
 
 import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
 import zhawmessenger.messagesystem.api.modules.email.persistance.EmailContactRepository;
-import zhawmessenger.messagesystem.impl.AbstractMemoryRepository;
+import zhawmessenger.messagesystem.impl.persistance.AbstractMemoryRepository;
 
 import java.util.Collection;
 import java.util.HashSet;

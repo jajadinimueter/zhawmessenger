@@ -1,16 +1,17 @@
 package zhawmessenger.messagesystem.impl.queue;
 
-import ca.odell.glazedlists.EventList;
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.queue.MessageQueue;
 import zhawmessenger.messagesystem.api.queue.NotSentException;
+import zhawmessenger.messagesystem.api.queue.QueueChangeListener;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 import zhawmessenger.messagesystem.api.transport.SentMessage;
 import zhawmessenger.messagesystem.api.transport.Transport;
-import zhawmessenger.messagesystem.api.persistance.QueueRepository;
+import zhawmessenger.messagesystem.api.queue.persistance.QueueRepository;
 import zhawmessenger.messagesystem.impl.util.DefaultTimeProvider;
 import zhawmessenger.messagesystem.impl.util.TimeProvider;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -22,11 +23,13 @@ public class MessageQueueImpl implements MessageQueue {
     private final List<Transport> transports;
     private final TimeProvider timeProvider;
     private final QueueRepository repository;
+    private final List<QueueChangeListener> queueChangeListeners;
 
     public MessageQueueImpl(List<Transport> transports,
                             TimeProvider timeProvider,
                             QueueRepository repository) {
 
+        this.queueChangeListeners = new ArrayList<QueueChangeListener>();
         this.repository = repository;
         this.transports = transports;
         this.timeProvider = timeProvider;
@@ -42,12 +45,23 @@ public class MessageQueueImpl implements MessageQueue {
         );
     }
 
-    protected Collection<? extends QueuedMessage> getMessages() {
+    protected List<? extends QueuedMessage> getMessages() {
         return this.repository.find();
+    }
+
+    @Override
+    public void addQueueChangeListener(QueueChangeListener listener) {
+        queueChangeListeners.add(listener);
     }
 
     public SentMessage send(Message message) {
         return this.send(message, false);
+    }
+
+    protected void fireQueueChanged() {
+        for (QueueChangeListener l : queueChangeListeners) {
+            l.queueChanged(this);
+        }
     }
 
     public SentMessage send(Message msg, boolean force) {
@@ -55,7 +69,7 @@ public class MessageQueueImpl implements MessageQueue {
         try {
             if (message.tryLock()) {
                 if (canBeSent(message)) {
-                    if (force || msg.getSendTime() < this.timeProvider.getTime()) {
+                    if (force || this.shouldBeSent(message)) {
                         for (Transport transport : this.transports) {
                             //noinspection unchecked
                             if (transport.canSend(msg.getClass())) {
@@ -66,6 +80,9 @@ public class MessageQueueImpl implements MessageQueue {
                                 //noinspection unchecked
                                 SentMessage sentMessage = transport.send(msg);
                                 repository.markSent(message);
+
+                                fireQueueChanged();
+
                                 return sentMessage;
                             }
                         }
@@ -90,12 +107,17 @@ public class MessageQueueImpl implements MessageQueue {
                 message.getState() != QueuedMessage.MessageState.SENDING;
     }
 
+    private boolean shouldBeSent(QueuedMessage message) {
+        return message.getMessage().getSendTime()
+                    < this.timeProvider.getTime();
+    }
+
     /**
      * Delivers all messages which are
      */
     public void sendAll(boolean force) {
         for (QueuedMessage queuedMessage : getMessages()) {
-            if (canBeSent(queuedMessage)) {
+            if (canBeSent(queuedMessage) && shouldBeSent(queuedMessage)) {
                 this.send(queuedMessage.getMessage(), force);
             }
         }
@@ -103,7 +125,9 @@ public class MessageQueueImpl implements MessageQueue {
 
     @Override
     public QueuedMessage add(Message message) {
-        return repository.create(message);
+        QueuedMessage q =  repository.create(message);
+        fireQueueChanged();
+        return q;
     }
 
     public QueuedMessage get(Message message) {
@@ -111,7 +135,7 @@ public class MessageQueueImpl implements MessageQueue {
     }
 
     @Override
-    public Collection<? extends QueuedMessage> getQueuedMessages() {
+    public List<? extends QueuedMessage> getQueuedMessages() {
         return getMessages();
     }
 
@@ -135,5 +159,6 @@ public class MessageQueueImpl implements MessageQueue {
         QueuedMessage msg = this.get(message);
         msg.suspend();
         repository.delete(message);
+        fireQueueChanged();
     }
 }

@@ -2,7 +2,7 @@ package zhawmessenger.messagesystem.impl.queue;
 
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
-import zhawmessenger.messagesystem.api.persistance.QueueRepository;
+import zhawmessenger.messagesystem.api.queue.persistance.QueueRepository;
 
 import java.util.Collection;
 import java.util.List;
@@ -23,7 +23,7 @@ public class MemoryQueueRepository implements QueueRepository {
     }
 
     @Override
-    public Collection<? extends QueuedMessage> find() {
+    public List<? extends QueuedMessage> find() {
         return this.messages;
     }
 

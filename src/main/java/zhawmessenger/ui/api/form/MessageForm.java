@@ -1,4 +1,4 @@
-package zhawmessenger.ui.api;
+package zhawmessenger.ui.api.form;
 
 import zhawmessenger.messagesystem.api.message.Message;
 

@@ -2,6 +2,8 @@ package zhawmessenger.ui.impl.modules.sms;
 
 import zhawmessenger.messagesystem.api.modules.mobilephone.message.Sms;
 import zhawmessenger.ui.api.*;
+import zhawmessenger.ui.api.form.DefaultSavableForm;
+import zhawmessenger.ui.api.form.SavableForm;
 
 import java.awt.*;
 

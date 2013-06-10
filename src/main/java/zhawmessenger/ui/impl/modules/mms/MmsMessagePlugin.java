@@ -6,6 +6,11 @@ import zhawmessenger.messagesystem.api.message.MessageFactory;
 import zhawmessenger.messagesystem.api.modules.mobilephone.message.Mms;
 import zhawmessenger.messagesystem.impl.modules.mobilephone.message.MmsImpl;
 import zhawmessenger.ui.api.*;
+import zhawmessenger.ui.api.form.DefaultSavableForm;
+import zhawmessenger.ui.api.form.MessageFormFactory;
+import zhawmessenger.ui.api.form.SavableForm;
+import zhawmessenger.ui.api.plugin.MessagePlugin;
+import zhawmessenger.ui.api.util.DefaultMessageWindowFactory;
 
 import javax.swing.*;
 import java.awt.*;

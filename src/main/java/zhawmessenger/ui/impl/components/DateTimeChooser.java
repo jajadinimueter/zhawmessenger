@@ -36,8 +36,8 @@ public class DateTimeChooser extends JPanel {
         gbc.gridy = 0;
         this.add(dateChooser, gbc);
 
-        SpinnerDateModel model = new SpinnerDateModel();
-        JSpinner timeSpinner = new JSpinner(model);
+        spinnerModel = new SpinnerDateModel();
+        JSpinner timeSpinner = new JSpinner(spinnerModel);
         JComponent editor = new JSpinner.DateEditor(timeSpinner, "HH:mm:ss");
         timeSpinner.setEditor(editor);
         if(value != null) {

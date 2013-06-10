@@ -2,7 +2,7 @@ package zhawmessenger.messagesystem.impl.modules.addressbook.persistance;
 
 import zhawmessenger.messagesystem.api.modules.addressbook.Group;
 import zhawmessenger.messagesystem.api.modules.addressbook.persistance.GroupRepository;
-import zhawmessenger.messagesystem.impl.AbstractMemoryRepository;
+import zhawmessenger.messagesystem.impl.persistance.AbstractMemoryRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,4 +1,4 @@
-package zhawmessenger.ui.api.form;
+package zhawmessenger.ui.api.formbuilder;
 
 /**
  */

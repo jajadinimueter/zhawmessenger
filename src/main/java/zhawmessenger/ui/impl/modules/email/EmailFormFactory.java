@@ -1,32 +1,25 @@
 package zhawmessenger.ui.impl.modules.email;
 
-import zhawmessenger.messagesystem.api.contact.Contact;
 import zhawmessenger.messagesystem.api.contact.DisplayableContactProvider;
 import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
 import zhawmessenger.messagesystem.api.modules.email.message.Email;
 import zhawmessenger.messagesystem.api.modules.email.persistance.EmailContactRepository;
-import zhawmessenger.messagesystem.api.remind.Reminder;
 import zhawmessenger.messagesystem.api.util.Finder;
 import zhawmessenger.messagesystem.impl.contact.MemoryEmailContactFinder;
-import zhawmessenger.messagesystem.impl.modules.email.contact.EmailContactImpl;
-import zhawmessenger.messagesystem.impl.modules.email.persistance.MemoryEmailContactRepository;
 import zhawmessenger.ui.api.*;
-import zhawmessenger.ui.api.form.FormBuilder;
-import zhawmessenger.ui.api.form.FormBuilderConstraints;
-import zhawmessenger.ui.api.form.GridBagConstraintsChanger;
-import zhawmessenger.ui.api.form.GridBagConstraintsChangerAdapter;
+import zhawmessenger.ui.api.form.DefaultSavableForm;
+import zhawmessenger.ui.api.form.MessageForm;
+import zhawmessenger.ui.api.form.SavableForm;
+import zhawmessenger.ui.api.formbuilder.FormBuilder;
+import zhawmessenger.ui.api.formbuilder.FormBuilderConstraints;
+import zhawmessenger.ui.api.formbuilder.GridBagConstraintsChangerAdapter;
 import zhawmessenger.ui.impl.DefaultApplicationContext;
 import zhawmessenger.ui.impl.components.*;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  */
@@ -41,19 +34,20 @@ public class EmailFormFactory
 
     @Override
     public SavableForm<Email> createForm(final Window owner, final Email message) {
-        // build the actual form
+        // build the actual formbuilder
         return new DefaultSavableForm<Email>(new EmailForm(owner, message));
     }
 
     class EmailForm extends MessageForm<Email> {
         private final ArrayList<Finder<String, DisplayableContactProvider>> finders;
 
+        private SendAtPanel sendAtPanel;
         private ApplicationContext appContext;
         private JComboBox senderField;
         private ReceiverTextArea receiverTextArea;
         private JTextArea text;
+        private JTextField subjectField;
         private JCheckBox sendImmediately;
-        private DateTimeChooser sendAtChooser;
         private JCheckBox noReminder;
         private DateTimeChooser remindDateChooser;
 
@@ -74,7 +68,8 @@ public class EmailFormFactory
         public Email getSavedMessage() {
             message.setSender((EmailContact) senderField.getModel().getSelectedItem());
             message.setText(text.getText());
-//            message.setSendTime(sendAtChooser.getDate().getTime());
+            message.setSendTime(sendAtPanel.getSendDate().getTime());
+            message.setSubject(subjectField.getText());
             return this.getMessage();
         }
 
@@ -105,6 +100,9 @@ public class EmailFormFactory
 
             receiversField.setBorder(new LineBorder(Color.GRAY));
 
+            subjectField = builder.addComponent(new JLabel("Betreff"),
+                    new JTextField());
+
             FormBuilderConstraints leftAlign = new FormBuilderConstraints(
                     FormBuilderConstraints.Align.LEFT);
 
@@ -130,7 +128,7 @@ public class EmailFormFactory
 
             receiversField.setBorder(new LineBorder(Color.GRAY));
 
-            SendAtPanel sendAtPanel = builder.addField(new SendAtPanel());
+            sendAtPanel = builder.addField(new SendAtPanel());
         }
 
         @Override

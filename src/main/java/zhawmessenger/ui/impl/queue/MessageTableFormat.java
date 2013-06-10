@@ -4,7 +4,7 @@ import ca.odell.glazedlists.gui.TableFormat;
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 import zhawmessenger.ui.api.ItemFormatter;
-import zhawmessenger.ui.api.MessagePlugin;
+import zhawmessenger.ui.api.plugin.MessagePlugin;
 
 import java.util.List;
 

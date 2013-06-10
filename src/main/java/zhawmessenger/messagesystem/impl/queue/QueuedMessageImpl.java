@@ -5,6 +5,8 @@ import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 import zhawmessenger.messagesystem.impl.util.DefaultTimeProvider;
 import zhawmessenger.messagesystem.impl.util.TimeProvider;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Date;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -12,6 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class QueuedMessageImpl implements QueuedMessage {
 
+    private PropertyChangeSupport propertyChangeSupport;
     private MessageState state;
     private boolean sent = false;
     private long timeQueued = 0;
@@ -31,6 +34,15 @@ public class QueuedMessageImpl implements QueuedMessage {
         this.message = message;
         this.timeProvider = timeProvider;
         this.timeQueued = new Date().getTime();
+        this.propertyChangeSupport = new PropertyChangeSupport(this);
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
     public MessageState getState() {
@@ -38,7 +50,10 @@ public class QueuedMessageImpl implements QueuedMessage {
     }
 
     public void setState(MessageState state) {
+        MessageState oldState = this.state;
         this.state = state;
+        this.propertyChangeSupport.firePropertyChange(
+                "state", oldState, state);
     }
 
     @Override

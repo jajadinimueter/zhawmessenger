@@ -1,7 +1,7 @@
 package zhawmessenger.ui.impl.components;
 
-import zhawmessenger.ui.api.form.FormBuilder;
-import zhawmessenger.ui.api.form.FormBuilderConstraints;
+import zhawmessenger.ui.api.formbuilder.FormBuilder;
+import zhawmessenger.ui.api.formbuilder.FormBuilderConstraints;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,6 +39,9 @@ public class SendAtPanel extends JPanel {
         remindDateChooser = remindAtBuilder.addField(
                 ComponentFactory.buildDatePanel(new Date()));
         builder.addComponent(new JLabel("Erinnerung am"), remindAtBuilder.getPanel());
+    }
 
+    public Date getSendDate() {
+        return sendAtChooser.getDate();
     }
 }

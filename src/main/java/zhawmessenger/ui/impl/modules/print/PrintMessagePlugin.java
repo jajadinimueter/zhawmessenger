@@ -5,6 +5,11 @@ import zhawmessenger.messagesystem.api.message.MessageFactory;
 import zhawmessenger.messagesystem.api.modules.print.message.PrintJob;
 import zhawmessenger.messagesystem.impl.modules.print.message.PrintJobnImpl;
 import zhawmessenger.ui.api.*;
+import zhawmessenger.ui.api.form.DefaultSavableForm;
+import zhawmessenger.ui.api.form.MessageFormFactory;
+import zhawmessenger.ui.api.form.SavableForm;
+import zhawmessenger.ui.api.plugin.MessagePlugin;
+import zhawmessenger.ui.api.util.DefaultMessageWindowFactory;
 
 import javax.swing.*;
 import java.awt.*;

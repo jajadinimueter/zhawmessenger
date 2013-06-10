@@ -1,4 +1,4 @@
-package zhawmessenger.messagesystem.impl;
+package zhawmessenger.messagesystem.impl.persistance;
 
 import zhawmessenger.messagesystem.api.persistance.IdObject;
 import zhawmessenger.messagesystem.api.persistance.Repository;

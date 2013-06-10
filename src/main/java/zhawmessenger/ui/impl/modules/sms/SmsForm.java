@@ -1,17 +1,8 @@
 package zhawmessenger.ui.impl.modules.sms;
 
-import zhawmessenger.messagesystem.api.modules.mobilephone.contact.MobilePhoneContact;
 import zhawmessenger.messagesystem.api.modules.mobilephone.message.Sms;
-import zhawmessenger.ui.api.ApplicationContext;
-import zhawmessenger.ui.api.MessageForm;
-import zhawmessenger.ui.api.form.FormBuilder;
-import zhawmessenger.ui.impl.DefaultApplicationContext;
-import zhawmessenger.ui.impl.components.SendAtPanel;
-import zhawmessenger.ui.impl.components.SenderField;
-import zhawmessenger.ui.impl.components.StopperGridBagConstraintsChanger;
 import zhawmessenger.ui.impl.modules.mobilephone.ShortMessageForm;
 
-import javax.swing.*;
 import java.awt.*;
 
 /**

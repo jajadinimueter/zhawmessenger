@@ -2,6 +2,8 @@ package zhawmessenger.messagesystem.api.queue;
 
 import zhawmessenger.messagesystem.api.message.Message;
 
+import java.beans.PropertyChangeListener;
+
 /**
  */
 public interface QueuedMessage {
@@ -9,6 +11,10 @@ public interface QueuedMessage {
     enum MessageState {
         SENDING, SENT
     }
+
+    void addPropertyChangeListener(PropertyChangeListener listener);
+
+    void removePropertyChangeListener(PropertyChangeListener listener);
 
     MessageState getState();
 

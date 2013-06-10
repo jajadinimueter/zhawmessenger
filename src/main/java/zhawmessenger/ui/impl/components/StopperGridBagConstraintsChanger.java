@@ -1,6 +1,6 @@
 package zhawmessenger.ui.impl.components;
 
-import zhawmessenger.ui.api.form.GridBagConstraintsChangerAdapter;
+import zhawmessenger.ui.api.formbuilder.GridBagConstraintsChangerAdapter;
 
 import javax.swing.*;
 import java.awt.*;

@@ -2,10 +2,9 @@ package zhawmessenger.ui.impl.modules.mobilephone;
 
 import zhawmessenger.messagesystem.api.modules.mobilephone.contact.MobilePhoneContact;
 import zhawmessenger.messagesystem.api.modules.mobilephone.message.ShortMessage;
-import zhawmessenger.messagesystem.api.modules.mobilephone.message.Sms;
 import zhawmessenger.ui.api.ApplicationContext;
-import zhawmessenger.ui.api.MessageForm;
-import zhawmessenger.ui.api.form.FormBuilder;
+import zhawmessenger.ui.api.form.MessageForm;
+import zhawmessenger.ui.api.formbuilder.FormBuilder;
 import zhawmessenger.ui.impl.DefaultApplicationContext;
 import zhawmessenger.ui.impl.components.SendAtPanel;
 import zhawmessenger.ui.impl.components.SenderField;

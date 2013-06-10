@@ -1,6 +1,9 @@
-package zhawmessenger.ui.api;
+package zhawmessenger.ui.api.plugin;
 
 import zhawmessenger.messagesystem.api.message.MessageFactory;
+import zhawmessenger.ui.api.ItemFormatter;
+import zhawmessenger.ui.api.form.MessageFormFactory;
+import zhawmessenger.ui.api.MessageWindowFactory;
 
 import javax.swing.*;
 

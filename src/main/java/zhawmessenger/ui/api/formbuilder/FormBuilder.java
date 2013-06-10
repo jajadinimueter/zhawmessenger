@@ -1,6 +1,4 @@
-package zhawmessenger.ui.api.form;
-
-import com.sun.xml.internal.messaging.saaj.soap.JpegDataContentHandler;
+package zhawmessenger.ui.api.formbuilder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -236,7 +234,7 @@ public class FormBuilder {
     }
 
     /**
-     * Add a panel at the end of the form to press the
+     * Add a panel at the end of the formbuilder to press the
      * other components upwards
      */
     private void addStopper() {

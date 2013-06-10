@@ -12,6 +12,8 @@ import java.util.List;
  */
 public interface MessageQueue extends Schedulable {
 
+    void addQueueChangeListener(QueueChangeListener listener);
+
     SentMessage send(Message message);
 
     SentMessage send(Message message, boolean force);
@@ -31,7 +33,7 @@ public interface MessageQueue extends Schedulable {
 
     void remove(Message message);
 
-    Collection<? extends QueuedMessage> getQueuedMessages();
+    List<? extends QueuedMessage> getQueuedMessages();
 
     boolean contains(Message message);
 
