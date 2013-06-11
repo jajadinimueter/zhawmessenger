@@ -1,11 +1,14 @@
 package zhawmessenger.ui.impl.modules.email;
 
+import zhawmessenger.messagesystem.api.contact.ContactProvider;
 import zhawmessenger.messagesystem.api.contact.DisplayableContactProvider;
+import zhawmessenger.messagesystem.api.modules.addressbook.persistance.GroupRepository;
+import zhawmessenger.messagesystem.api.modules.addressbook.persistance.PersonRepository;
 import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
 import zhawmessenger.messagesystem.api.modules.email.message.Email;
 import zhawmessenger.messagesystem.api.modules.email.persistance.EmailContactRepository;
 import zhawmessenger.messagesystem.api.util.Finder;
-import zhawmessenger.messagesystem.impl.contact.MemoryEmailContactFinder;
+import zhawmessenger.messagesystem.impl.modules.email.contact.MemoryEmailContactFinder;
 import zhawmessenger.ui.api.*;
 import zhawmessenger.ui.api.form.DefaultSavableForm;
 import zhawmessenger.ui.api.form.MessageForm;
@@ -27,9 +30,15 @@ public class EmailFormFactory
         extends AbstractFormFactory<Email> {
 
     private EmailContactRepository contactRepository;
+    private GroupRepository groupRepository;
+    private PersonRepository personRepository;
 
-    public EmailFormFactory(EmailContactRepository contactRepository) {
+    public EmailFormFactory(EmailContactRepository contactRepository,
+                            GroupRepository groupRepository,
+                            PersonRepository personRepository) {
         this.contactRepository = contactRepository;
+        this.groupRepository = groupRepository;
+        this.personRepository = personRepository;
     }
 
     @Override
@@ -53,13 +62,14 @@ public class EmailFormFactory
 
 
         public EmailForm(Window owner, Email message) {
-            super(owner, message)
-            ;
+            super(owner, message);
+
             this.finders = new ArrayList<Finder<String, DisplayableContactProvider>>();
 
             appContext = DefaultApplicationContext.getInstance();
 
-            this.finders.add(new MemoryEmailContactFinder(contactRepository));
+            this.finders.add(new MemoryEmailContactFinder(contactRepository,
+                    groupRepository, personRepository));
 
             this.buildForm();
         }
@@ -70,7 +80,10 @@ public class EmailFormFactory
             message.setText(text.getText());
             message.setSendTime(sendAtPanel.getSendDate().getTime());
             message.setSubject(subjectField.getText());
-            return this.getMessage();
+            for (ContactProvider provider : receiverTextArea.getContactProviders()) {
+                message.addContactProvider(provider);
+            }
+            return message;
         }
 
         protected void buildForm() {
@@ -80,8 +93,8 @@ public class EmailFormFactory
                     new SenderField<EmailContact>(
                             appContext.getUserLoggedIn().getEmailContacts()));
 
-            JScrollPane receiversField = builder.addComponent(new JLabel("Empfänger"),
-                    new JScrollPane(new ReceiverTextArea(owner, finders, 1, 1)),
+            receiverTextArea = builder.addComponent(new JLabel("Empfänger"),
+                    new ReceiverTextArea(owner, finders),
                     new GridBagConstraintsChangerAdapter() {
                         @Override
                         public GridBagConstraints changeField(Component field, GridBagConstraints gbc) {
@@ -98,7 +111,7 @@ public class EmailFormFactory
                         }
                     });
 
-            receiversField.setBorder(new LineBorder(Color.GRAY));
+            receiverTextArea.setBorder(new LineBorder(Color.GRAY));
 
             subjectField = builder.addComponent(new JLabel("Betreff"),
                     new JTextField());
@@ -109,8 +122,6 @@ public class EmailFormFactory
             // text
             text = new JTextArea(1, 1);
             builder.addField(new JScrollPane(text), new StopperGridBagConstraintsChanger());
-
-            receiversField.setBorder(new LineBorder(Color.GRAY));
 
             sendAtPanel = builder.addField(new SendAtPanel());
         }

@@ -1,6 +1,8 @@
 package zhawmessenger.messagesystem.api.message;
 
 import zhawmessenger.messagesystem.api.contact.Contact;
+import zhawmessenger.messagesystem.api.contact.ContactProvider;
+import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
 import zhawmessenger.messagesystem.api.remind.Remindable;
 import zhawmessenger.messagesystem.api.remind.Reminder;
 
@@ -10,7 +12,7 @@ import java.util.List;
 
 /**
  */
-public abstract class AbstractRemindableMessage<R extends Contact>
+public abstract class AbstractRemindableMessage<R extends EmailContact>
         extends AbstractMessage<R> implements Remindable<R> {
 
     private final List<Reminder<R>> reminders;

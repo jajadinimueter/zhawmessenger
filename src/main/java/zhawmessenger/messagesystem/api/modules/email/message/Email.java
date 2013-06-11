@@ -1,5 +1,6 @@
 package zhawmessenger.messagesystem.api.modules.email.message;
 
+import zhawmessenger.messagesystem.api.contact.ContactProvider;
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
 import zhawmessenger.messagesystem.api.remind.Remindable;
@@ -8,7 +9,8 @@ import java.util.List;
 
 /**
  */
-public interface Email extends Message<EmailContact>, Remindable<EmailContact> {
+public interface Email extends Message<EmailContact>,
+        Remindable<EmailContact> {
 
     void setText(String text);
 

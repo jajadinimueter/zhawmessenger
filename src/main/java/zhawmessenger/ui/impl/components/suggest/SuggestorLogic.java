@@ -1,4 +1,4 @@
-package zhawmessenger.ui.impl.components;
+package zhawmessenger.ui.impl.components.suggest;
 
 /**
  * The Logic searchTo the suggestor is extracted for better testability

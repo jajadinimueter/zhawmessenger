@@ -81,7 +81,8 @@ public class EmailMessagePlugin implements MessagePlugin<Email> {
 
     @Override
     public MessageFormFactory getFormFactory() {
-        return new EmailFormFactory(contactRepository);
+        return new EmailFormFactory(contactRepository,
+                groupRepository, personRepository);
     }
 
     public MessageWindowFactory getWindowFactory() {

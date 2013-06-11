@@ -1,13 +1,12 @@
-package zhawmessenger.ui.impl.components;
+package zhawmessenger.ui.impl.components.suggest;
 
-import zhawmessenger.messagesystem.api.contact.Contact;
 import zhawmessenger.messagesystem.api.util.Finder;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -16,9 +15,11 @@ import java.util.List;
 
 /**
  */
-public class Suggestor<T> implements KeyListener, DocumentListener {
+public class Suggestor<T>
+        implements KeyListener, DocumentListener {
+
     private final Window owner;
-    private final JTextArea textComponent;
+    private final JTextComponent textComponent;
 
     private final SuggestorLogic<T> logic;
 
@@ -30,18 +31,21 @@ public class Suggestor<T> implements KeyListener, DocumentListener {
     private final JWindow choicesDialog;
     private final JTable choicesList;
 
+    private final List<SuggesterItemListener<T>> suggesterItemListeners;
+
     private int startPos = 0;
     private int endPos = 0;
 
-    public Suggestor(Window owner, JTextArea textComponent, SuggesterValueExtractor<T> extractor) {
+    public Suggestor(Window owner, JTextComponent textComponent, SuggesterValueExtractor<T> extractor) {
         this(owner, textComponent, extractor, new ArrayList<Finder<String, T>>());
     }
 
     public Suggestor(Window owner,
-                     JTextArea textComponent,
+                     JTextComponent textComponent,
                      SuggesterValueExtractor<T> extractor,
                      List<Finder<String, T>> finders) {
 
+        suggesterItemListeners = new ArrayList<SuggesterItemListener<T>>();
         this.tableModel = new ListTableModel<T>(extractor);
         this.logic = new SuggestorLogic<T>();
         this.extractor = extractor;
@@ -148,6 +152,10 @@ public class Suggestor<T> implements KeyListener, DocumentListener {
         }
     }
 
+    public void addSuggestorItemListener(SuggesterItemListener<T> suggesterItemListener) {
+        this.suggesterItemListeners.add(suggesterItemListener);
+    }
+
     @Override
     public void insertUpdate(DocumentEvent e) {
         this.showChoices();
@@ -176,10 +184,14 @@ public class Suggestor<T> implements KeyListener, DocumentListener {
                     int index = this.choicesList.getSelectedRow();
                     if (index >= 0) {
                         T item = tableModel.get(index);
-                        SuggestorLogic.SearchRange range = logic.getSearchRange(textComponent.getText(),
-                                textComponent.getCaretPosition());
-                        textComponent.replaceRange(" <" + extractor.extract(item) + ">",
-                                range.getReplaceFrom(), range.getReplaceTo());
+//                        SuggestorLogic.SearchRange range = logic.getSearchRange(textComponent.getText(),
+//                                textComponent.getCaretPosition());
+//                        textComponent.replaceRange(" <" + extractor.extract(item) + ">",
+//                                range.getReplaceFrom(), range.getReplaceTo());
+                        for (SuggesterItemListener<T> sl : suggesterItemListeners) {
+                            sl.itemFound(item);
+                        }
+                        this.choicesDialog.setVisible(false);
                         e.consume();
                     }
                 }

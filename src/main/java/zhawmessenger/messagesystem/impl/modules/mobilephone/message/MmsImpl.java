@@ -10,6 +10,11 @@ public class MmsImpl
         extends AbstractMessage<MobilePhoneContact>
         implements Mms {
 
+    @Override
+    protected Class<MobilePhoneContact> getContactClass() {
+        return MobilePhoneContact.class;
+    }
+
     public MmsImpl(Object id) {
         super(id);
     }

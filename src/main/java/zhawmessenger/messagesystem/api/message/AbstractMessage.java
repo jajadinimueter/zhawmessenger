@@ -3,6 +3,8 @@ package zhawmessenger.messagesystem.api.message;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import zhawmessenger.messagesystem.api.contact.Contact;
+import zhawmessenger.messagesystem.api.contact.ContactProvider;
+import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
 import zhawmessenger.messagesystem.api.persistance.AbstractIdObject;
 
 import java.util.ArrayList;
@@ -17,7 +19,10 @@ public abstract class AbstractMessage<R extends Contact>
     private String text;
     private long sendTime;
 
+    private final List<ContactProvider> contactProviders = new ArrayList<ContactProvider>();
     private final List<R> receivers = new ArrayList<R>();
+
+    protected abstract Class<R> getContactClass();
 
     public AbstractMessage(Object id) {
         super(id);
@@ -43,18 +48,23 @@ public abstract class AbstractMessage<R extends Contact>
     }
 
     @Override
-    public void addReceiver(R receiver) {
-        this.receivers.add(receiver);
+    public void addContactProvider(ContactProvider provider) {
+        contactProviders.add(provider);
     }
 
     @Override
-    public void removeReceiver(R receiver) {
-        this.receivers.remove(receiver);
+    public List<ContactProvider> getContactProviders() {
+        return contactProviders;
     }
 
     @Override
     public List<R> getReceivers() {
-        return this.receivers;
+        // collect receivers
+        List<R> receivers = new ArrayList<R>();
+        for (ContactProvider provider : contactProviders) {
+            receivers.addAll(provider.getContacts(getContactClass()));
+        }
+        return receivers;
     }
 
     @Override

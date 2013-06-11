@@ -1,4 +1,4 @@
-package zhawmessenger.ui.impl.components;
+package zhawmessenger.ui.impl.queue;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

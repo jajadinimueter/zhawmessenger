@@ -1,5 +1,6 @@
 package zhawmessenger.messagesystem.impl.modules.print.transport;
 
+import zhawmessenger.messagesystem.api.contact.Contact;
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.modules.print.message.PrintJob;
 import zhawmessenger.messagesystem.api.modules.print.transport.PrintTransport;
@@ -8,6 +9,7 @@ import zhawmessenger.messagesystem.api.transport.TransportException;
 import zhawmessenger.messagesystem.api.util.SentMessageLogger;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  */
@@ -34,6 +36,11 @@ public class FakePrintTransportImpl implements PrintTransport {
             @Override
             public Date sentAt() {
                 return new Date();
+            }
+
+            @Override
+            public List<? extends Contact> getReceivers() {
+                return null;  // FIXME
             }
         };
         this.messageLogger.log(sentMessage);

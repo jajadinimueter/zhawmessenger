@@ -1,8 +1,11 @@
 package zhawmessenger.messagesystem.api.transport;
 
+import zhawmessenger.messagesystem.api.contact.Contact;
+import zhawmessenger.messagesystem.api.contact.ContactProvider;
 import zhawmessenger.messagesystem.api.message.Message;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  */
@@ -18,4 +21,7 @@ public interface SentMessage<T extends Message> {
      * @return
      */
     Date sentAt();
+
+    List<? extends Contact> getReceivers();
+
 }

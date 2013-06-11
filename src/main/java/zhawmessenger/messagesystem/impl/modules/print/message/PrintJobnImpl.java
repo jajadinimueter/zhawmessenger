@@ -11,6 +11,11 @@ public class PrintJobnImpl
         extends AbstractMessage<Printer>
         implements PrintJob {
 
+    @Override
+    protected Class<Printer> getContactClass() {
+        return Printer.class;
+    }
+
     public PrintJobnImpl(Object id) {
         super(id);
     }

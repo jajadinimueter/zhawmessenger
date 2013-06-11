@@ -1,6 +1,7 @@
 package zhawmessenger.ui.impl.modules.print;
 
 import zhawmessenger.messagesystem.api.contact.DisplayableContactProvider;
+import zhawmessenger.messagesystem.api.modules.print.contact.Printer;
 import zhawmessenger.messagesystem.api.modules.print.message.PrintJob;
 import zhawmessenger.messagesystem.api.modules.print.persistance.PrinterRepository;
 import zhawmessenger.messagesystem.api.util.Finder;
@@ -13,9 +14,11 @@ import zhawmessenger.ui.impl.components.StopperGridBagConstraintsChanger;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 /**
  */
@@ -53,7 +56,7 @@ public class PrintForm
 
         receiverField = builder.addComponent(new JLabel("Drucker"),
                 new ReceiverTextArea(owner,
-                        Arrays.asList(printerFinder), 1, 1));
+                        Arrays.asList(printerFinder)));
 
         receiverField.setBorder(new LineBorder(Color.GRAY));
 
@@ -66,11 +69,15 @@ public class PrintForm
 
     @Override
     public PrintJob getMessage() {
-        return null;  // FIXME
+        return message;
     }
 
     @Override
     public PrintJob getSavedMessage() {
-        return null;  // FIXME
+        message.setText(text.getText());
+        for (DisplayableContactProvider dp : receiverField.getContactProviders()) {
+            message.addContactProvider(dp);
+        }
+        return message;
     }
 }

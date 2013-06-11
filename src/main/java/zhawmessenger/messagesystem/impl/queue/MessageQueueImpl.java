@@ -86,6 +86,8 @@ public class MessageQueueImpl implements MessageQueue {
                                 return sentMessage;
                             }
                         }
+                        throw new RuntimeException(
+                                "No Transport found for message " + message);
                     }
                 }
             }

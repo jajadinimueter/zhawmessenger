@@ -1,5 +1,6 @@
 package zhawmessenger.messagesystem.impl.modules.mobilephone.transport;
 
+import zhawmessenger.messagesystem.api.contact.Contact;
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.modules.mobilephone.contact.MobilePhoneContact;
 import zhawmessenger.messagesystem.api.modules.mobilephone.message.Mms;
@@ -46,6 +47,11 @@ public class FakeMobilePhoneTransport implements Transport<ShortMessage> {
             @Override
             public Date sentAt() {
                 return sentAt;
+            }
+
+            @Override
+            public List<? extends Contact> getReceivers() {
+                return null;  // FIXME
             }
         };
     }

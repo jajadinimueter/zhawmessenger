@@ -1,5 +1,6 @@
 package zhawmessenger.messagesystem.api.modules.email.message;
 
+import zhawmessenger.messagesystem.api.contact.ContactProvider;
 import zhawmessenger.messagesystem.api.message.AbstractMessage;
 import zhawmessenger.messagesystem.api.message.AbstractRemindableMessage;
 import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
@@ -15,6 +16,11 @@ public class EmailAdapter
     private EmailContact sender;
     private List<EmailContact> bccs;
     private List<EmailContact> ccs;
+
+    @Override
+    protected Class<EmailContact> getContactClass() {
+        return EmailContact.class;
+    }
 
     public EmailAdapter(Object id) {
         super(id);

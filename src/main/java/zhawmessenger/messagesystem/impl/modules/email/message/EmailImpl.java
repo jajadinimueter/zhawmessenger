@@ -1,5 +1,6 @@
 package zhawmessenger.messagesystem.impl.modules.email.message;
 
+import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
 import zhawmessenger.messagesystem.api.modules.email.message.EmailAdapter;
 
 /**

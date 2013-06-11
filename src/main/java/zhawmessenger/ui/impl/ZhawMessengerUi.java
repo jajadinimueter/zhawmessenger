@@ -2,15 +2,13 @@ package zhawmessenger.ui.impl;
 
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SortedList;
-import ca.odell.glazedlists.swing.AdvancedTableModel;
-import ca.odell.glazedlists.swing.GlazedListsSwing;
-import ca.odell.glazedlists.swing.TableComparatorChooser;
 import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.queue.MessageQueue;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 import zhawmessenger.messagesystem.api.transport.Transport;
 import zhawmessenger.messagesystem.impl.modules.email.transport.FakeEmailTransportImpl;
+import zhawmessenger.messagesystem.impl.modules.mobilephone.transport.FakeMobilePhoneTransport;
+import zhawmessenger.messagesystem.impl.modules.print.transport.FakePrintTransportImpl;
 import zhawmessenger.messagesystem.impl.queue.MemoryQueueRepository;
 import zhawmessenger.messagesystem.impl.queue.MessageQueueImpl;
 import zhawmessenger.messagesystem.impl.queue.QueuedMessageImpl;
@@ -21,13 +19,11 @@ import zhawmessenger.ui.api.form.MessageFormFactory;
 import zhawmessenger.ui.api.form.SavableForm;
 import zhawmessenger.ui.api.plugin.MessagePlugin;
 import zhawmessenger.ui.impl.components.JConsolePanel;
-import zhawmessenger.ui.impl.components.QueueTable;
+import zhawmessenger.ui.impl.queue.QueueTable;
 import zhawmessenger.ui.impl.modules.email.EmailMessagePlugin;
 import zhawmessenger.ui.impl.modules.mms.MmsMessagePlugin;
 import zhawmessenger.ui.impl.modules.print.PrintMessagePlugin;
 import zhawmessenger.ui.impl.modules.sms.SmsMessagePlugin;
-import zhawmessenger.ui.impl.queue.MessageComparator;
-import zhawmessenger.ui.impl.queue.MessageTableFormat;
 import zhawmessenger.ui.impl.queue.QueueTableModel;
 
 import javax.swing.*;
@@ -44,8 +40,7 @@ public class ZhawMessengerUi {
 
     private final List<MessagePlugin> messagePlugins;
     private final MessageQueue messageQueue;
-
-    private EventList<QueuedMessage> queuedMessages;
+    private QueueTableModel tableModel;
 
     public ZhawMessengerUi(List<MessagePlugin> messagePlugins,
                            MessageQueue messageQueue) {
@@ -69,8 +64,10 @@ public class ZhawMessengerUi {
         savableForm.addSaveListener(new SaveListener() {
             @Override
             public void saved(Message message) {
-                QueuedMessage m = messageQueue.add(message);
-                queuedMessages.add(m);
+                if (message == null) {
+                    throw new RuntimeException("Message cannot be null");
+                }
+                messageQueue.add(message);
             }
         });
         savableForm.addCancelListener(new CancelListener() {
@@ -93,15 +90,8 @@ public class ZhawMessengerUi {
         final JPanel mainPanel;
         final JToolBar mainToolbar;
 
-        final Collection<? extends QueuedMessage> initMessages
-                = messageQueue.getQueuedMessages();
-
-        queuedMessages = new BasicEventList<QueuedMessage>();
-
-        queuedMessages.addAll(initMessages);
-
-        messageTable = new QueueTable(
-                new QueueTableModel(messageQueue, messagePlugins));
+        tableModel = new QueueTableModel(messageQueue, messagePlugins);
+        messageTable = new QueueTable(tableModel);
 
         queueScrollPane = new JScrollPane(messageTable);
 
@@ -135,8 +125,7 @@ public class ZhawMessengerUi {
             public void actionPerformed(ActionEvent e) {
                 int selCol = messageTable.getSelectedColumn();
                 if ( selCol >= 0 ) {
-                    QueuedMessage message =
-                            queuedMessages.get(selCol);
+                    QueuedMessage message = messageQueue.getQueuedMessages().get(selCol);
                     for (MessagePlugin mp : messagePlugins) {
                         //noinspection unchecked
                         if (mp.doesHandle(message.getMessage().getClass())) {
@@ -153,7 +142,7 @@ public class ZhawMessengerUi {
             public void actionPerformed(ActionEvent e) {
                 int selCol = messageTable.getSelectedColumn();
                 if (selCol >= 0) {
-                    QueuedMessage msg = queuedMessages.get(selCol);
+                    QueuedMessage msg = messageQueue.getQueuedMessages().get(selCol);
                     messageQueue.send(msg.getMessage());
                 }
             }
@@ -165,7 +154,7 @@ public class ZhawMessengerUi {
             public void actionPerformed(ActionEvent e) {
                 int selCol = messageTable.getSelectedColumn();
                 if (selCol >= 0) {
-                    QueuedMessage queuedMessage = queuedMessages.get(selCol);
+                    QueuedMessage queuedMessage = messageQueue.getQueuedMessages().get(selCol);
                     messageQueue.remove(queuedMessage.getMessage());
                 }
             }
@@ -224,6 +213,8 @@ public class ZhawMessengerUi {
 
         List<Transport> transports = new ArrayList<Transport>();
         transports.add(new FakeEmailTransportImpl(consolePanel));
+        transports.add(new FakePrintTransportImpl(consolePanel));
+        transports.add(new FakeMobilePhoneTransport(consolePanel));
 
         QueueRepository repository = new MemoryQueueRepository(new ArrayList<QueuedMessageImpl>());
         MessageQueue queue = new MessageQueueImpl(transports, repository);

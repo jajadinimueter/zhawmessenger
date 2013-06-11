@@ -11,7 +11,14 @@ import java.util.List;
 
 /**
  */
-public class SmsImpl extends AbstractMessage<MobilePhoneContact> implements Sms {
+public class SmsImpl
+        extends AbstractMessage<MobilePhoneContact> implements Sms {
+
+    @Override
+    protected Class<MobilePhoneContact> getContactClass() {
+        return MobilePhoneContact.class;
+
+    }
 
     public SmsImpl(Object id) {
         super(id);
