@@ -2,10 +2,10 @@ package zhawmessenger.ui.impl.components;
 
 import javax.swing.*;
 
-class JTextAreaWithScroll extends JTextArea {
+class TextAreaWithScroll extends JTextArea {
     private JScrollPane scrollPane;
 
-    public JTextAreaWithScroll(int vsbPolicy, int hsbPolicy) {
+    public TextAreaWithScroll(int vsbPolicy, int hsbPolicy) {
         this.setRows(10);
         scrollPane = new JScrollPane(this, vsbPolicy, hsbPolicy);
     }

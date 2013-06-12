@@ -1,19 +1,25 @@
 package zhawmessenger.ui.impl;
 
+import zhawmessenger.messagesystem.api.contact.DisplayableContactProvider;
 import zhawmessenger.messagesystem.api.modules.addressbook.Group;
 import zhawmessenger.messagesystem.api.modules.addressbook.Person;
 import zhawmessenger.messagesystem.api.modules.addressbook.persistance.GroupRepository;
 import zhawmessenger.messagesystem.api.modules.addressbook.persistance.PersonRepository;
 import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
 import zhawmessenger.messagesystem.api.modules.email.persistance.EmailContactRepository;
+import zhawmessenger.messagesystem.api.modules.mobilephone.contact.MobilePhoneContact;
+import zhawmessenger.messagesystem.api.modules.mobilephone.persistance.MobilePhoneContactRepository;
 import zhawmessenger.messagesystem.api.modules.print.contact.Printer;
 import zhawmessenger.messagesystem.api.modules.print.persistance.PrinterRepository;
+import zhawmessenger.messagesystem.api.persistance.SearchableRepository;
 import zhawmessenger.messagesystem.impl.modules.addressbook.GroupImpl;
 import zhawmessenger.messagesystem.impl.modules.addressbook.PersonImpl;
 import zhawmessenger.messagesystem.impl.modules.addressbook.persistance.MemoryGroupRepository;
 import zhawmessenger.messagesystem.impl.modules.addressbook.persistance.MemoryPersonRepository;
 import zhawmessenger.messagesystem.impl.modules.email.contact.EmailContactImpl;
 import zhawmessenger.messagesystem.impl.modules.email.persistance.MemoryEmailContactRepository;
+import zhawmessenger.messagesystem.impl.modules.mobilephone.contact.MobilePhoneContactImpl;
+import zhawmessenger.messagesystem.impl.modules.mobilephone.persistance.MemoryMobilePhoneContactRepository;
 import zhawmessenger.messagesystem.impl.modules.print.contact.PrinterImpl;
 import zhawmessenger.messagesystem.impl.modules.print.persistance.MemoryPrinterRepository;
 
@@ -30,6 +36,8 @@ public class UglyContactsCreationFactory {
 
     private final Printer hpDeskJet;
     private final Printer brother;
+
+    private final MobilePhoneContact fmuellerMobilePhone;
 
     private final EmailContact bfuchsEmail1;
     private final EmailContact bfuchsEmail2;
@@ -52,6 +60,7 @@ public class UglyContactsCreationFactory {
     private final PersonRepository personRepository;
     private final GroupRepository groupRepository;
     private final PrinterRepository printerRepository;
+    private final MobilePhoneContactRepository mobilePhoneContactRepository;
 
     private UglyContactsCreationFactory() {
         aeinsteinEmail = new EmailContactImpl(UUID.randomUUID(), "a.einstein@gmx.ch");
@@ -62,6 +71,8 @@ public class UglyContactsCreationFactory {
 
         fmuellerEmail1 = new EmailContactImpl(UUID.randomUUID(), "fmueller@zhaw.ch");
         fmuellerEmail2 = new EmailContactImpl(UUID.randomUUID(), "jajadinimueter@gmail.com");
+
+        fmuellerMobilePhone = new MobilePhoneContactImpl(UUID.randomUUID(), "079 231 13 84");
 
         fmueller = new PersonImpl(UUID.randomUUID(), "Florian Müller", "fmueller");
         bfuchs = new PersonImpl(UUID.randomUUID(), "Bernhard Fuchs", "bfuchs");
@@ -89,6 +100,8 @@ public class UglyContactsCreationFactory {
         aeinstein.addEmailContact(aeinsteinEmail);
         bgreen.addEmailContact(bgreenEmail);
 
+
+
         emailContactRepository = new MemoryEmailContactRepository(Arrays.asList(
                 aeinsteinEmail,
                 bgreenEmail,
@@ -108,6 +121,10 @@ public class UglyContactsCreationFactory {
 
         printerRepository = new MemoryPrinterRepository(Arrays.asList(
                 brother, hpDeskJet
+        ));
+
+        mobilePhoneContactRepository = new MemoryMobilePhoneContactRepository(Arrays.asList(
+                fmuellerMobilePhone
         ));
 
     }
@@ -196,4 +213,7 @@ public class UglyContactsCreationFactory {
         return groupRepository;
     }
 
+    public MobilePhoneContactRepository getMobilePhoneContactRepository() {
+        return mobilePhoneContactRepository;
+    }
 }

@@ -12,12 +12,12 @@ import java.util.Date;
  * A logger panel which implements {@link zhawmessenger.messagesystem.api.util.SentMessageLogger} so
  * it can be used directly in transports to log sent messages.
  */
-public class JConsolePanel extends JPanel implements SentMessageLogger {
-    private final JTextAreaWithScroll logTextArea;
+public class ConsolePanel extends JPanel implements SentMessageLogger {
+    private final TextAreaWithScroll logTextArea;
 
-    public JConsolePanel() {
+    public ConsolePanel() {
         this.setLayout(new BorderLayout());
-        this.logTextArea = new JTextAreaWithScroll(
+        this.logTextArea = new TextAreaWithScroll(
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         this.logTextArea.setEditable(false);

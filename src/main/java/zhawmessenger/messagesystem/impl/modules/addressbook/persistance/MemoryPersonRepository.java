@@ -4,6 +4,7 @@ import zhawmessenger.messagesystem.api.modules.addressbook.Person;
 import zhawmessenger.messagesystem.api.modules.addressbook.persistance.PersonRepository;
 import zhawmessenger.messagesystem.api.modules.auth.Principal;
 import zhawmessenger.messagesystem.impl.persistance.AbstractMemoryRepository;
+import zhawmessenger.messagesystem.impl.persistance.AbstractSearchableRepository;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -11,7 +12,7 @@ import java.util.Set;
 
 /**
  */
-public class MemoryPersonRepository extends AbstractMemoryRepository<Person>
+public class MemoryPersonRepository extends AbstractSearchableRepository<Person>
         implements PersonRepository {
 
     public MemoryPersonRepository(Collection<Person> items) {
@@ -19,25 +20,12 @@ public class MemoryPersonRepository extends AbstractMemoryRepository<Person>
     }
 
     @Override
-    public Collection<Person> find(String name) {
-        return find(name, false);
-    }
-
-    @Override
-    public Collection<Person> find(String name, boolean startsWith) {
-        final Set<Person> found = new HashSet<Person>();
-        for (Person person : items) {
-            if (startsWith) {
-                if (person.getName().indexOf(name) == 0) {
-                    found.add(person);
-                }
-            } else {
-                if (person.getName().equals(name)) {
-                    found.add(person);
-                }
-            }
+    protected boolean matches(Person item, String value, boolean startWith) {
+        if (startWith) {
+            return item.getName().startsWith(value);
+        } else {
+            return item.getName().equals(value);
         }
-        return found;
     }
 
     @Override
@@ -52,17 +40,4 @@ public class MemoryPersonRepository extends AbstractMemoryRepository<Person>
         }
         return null;
     }
-
-    @Override
-    public void store(Person person) {
-        if (!this.items.contains(person)) {
-            this.items.add(person);
-        }
-    }
-
-    @Override
-    public void delete(Person person) {
-        this.items.remove(person);
-    }
-
 }

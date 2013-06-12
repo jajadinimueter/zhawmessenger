@@ -1,8 +1,8 @@
 package zhawmessenger.ui.impl;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
+import zhawmessenger.messagesystem.api.contact.DisplayableContactProvider;
 import zhawmessenger.messagesystem.api.message.Message;
+import zhawmessenger.messagesystem.api.persistance.SearchableRepository;
 import zhawmessenger.messagesystem.api.queue.MessageQueue;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
 import zhawmessenger.messagesystem.api.transport.Transport;
@@ -18,7 +18,7 @@ import zhawmessenger.ui.api.*;
 import zhawmessenger.ui.api.form.MessageFormFactory;
 import zhawmessenger.ui.api.form.SavableForm;
 import zhawmessenger.ui.api.plugin.MessagePlugin;
-import zhawmessenger.ui.impl.components.JConsolePanel;
+import zhawmessenger.ui.impl.components.ConsolePanel;
 import zhawmessenger.ui.impl.queue.QueueTable;
 import zhawmessenger.ui.impl.modules.email.EmailMessagePlugin;
 import zhawmessenger.ui.impl.modules.mms.MmsMessagePlugin;
@@ -31,7 +31,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -125,11 +124,16 @@ public class ZhawMessengerUi {
             public void actionPerformed(ActionEvent e) {
                 int selCol = messageTable.getSelectedColumn();
                 if ( selCol >= 0 ) {
-                    QueuedMessage message = messageQueue.getQueuedMessages().get(selCol);
-                    for (MessagePlugin mp : messagePlugins) {
+                    final QueuedMessage message = messageQueue.getQueuedMessages().get(selCol);
+                    for (final MessagePlugin mp : messagePlugins) {
                         //noinspection unchecked
                         if (mp.doesHandle(message.getMessage().getClass())) {
-                            openMessage(mp, frame, message.getMessage());
+                            SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    openMessage(mp, frame, message.getMessage());
+                                }
+                            });
                         }
                     }
                 }
@@ -179,7 +183,7 @@ public class ZhawMessengerUi {
     }
 
     public static void main(String[] args) {
-        final JConsolePanel consolePanel = new JConsolePanel();
+        final ConsolePanel consolePanel = new ConsolePanel();
         final TimeIntervalScheduler scheduler = new TimeIntervalScheduler(1000);
 
         UglyContactsCreationFactory repositoryFactory =
@@ -197,9 +201,15 @@ public class ZhawMessengerUi {
         MessagePlugin printMessagePlugin
                 = new PrintMessagePlugin(repositoryFactory.getPrinterRepository());
 
-        MessagePlugin smsMessagePlugin = new SmsMessagePlugin();
+        List<SearchableRepository<? extends DisplayableContactProvider>> mobileRepos =
+                new ArrayList<SearchableRepository<? extends DisplayableContactProvider>>();
 
-        MessagePlugin mmsMessagePlugin = new MmsMessagePlugin();
+        mobileRepos.add(repositoryFactory.getGroupRepository());
+        mobileRepos.add(repositoryFactory.getPersonRepository());
+        mobileRepos.add(repositoryFactory.getMobilePhoneContactRepository());
+
+        MessagePlugin smsMessagePlugin = new SmsMessagePlugin(mobileRepos);
+        MessagePlugin mmsMessagePlugin = new MmsMessagePlugin(mobileRepos);
 
         MessagePlugin emailMessagePlugin = new EmailMessagePlugin(
                 repositoryFactory.getEmailContactRepository(),

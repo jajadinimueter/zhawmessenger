@@ -11,6 +11,10 @@ import zhawmessenger.messagesystem.api.modules.mobilephone.contact.MobilePhoneCo
 public class MobilePhoneContactImpl extends AbstractContact implements MobilePhoneContact {
     private static final String PHONE_NUMBER_REGEX = "";
 
+    public MobilePhoneContactImpl(Object id, String value) {
+        super(id, value);
+    }
+
     @SuppressWarnings("SimplifiableIfStatement")
     @Override
     public boolean isValid() {

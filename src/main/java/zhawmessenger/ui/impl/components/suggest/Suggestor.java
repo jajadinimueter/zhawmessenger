@@ -135,21 +135,14 @@ public class Suggestor<T>
 
     private void showChoices() {
         Set<T> items = this.find();
-        Point pt = textComponent.getCaret().getMagicCaretPosition();
-
-        if (pt != null) {
-            System.out.println(String.format("Point %f, %f", pt.getX(), pt.getY()));
-            tableModel.replace(items);
-            double x = owner.getX() + textComponent.getX() + pt.getX() + 10;
-            double y = owner.getY() + textComponent.getY() + pt.getY() + 50;
-            choicesDialog.setLocation((int)x, (int)y);
-            if (items.size() > 0) {
-                choicesList.setRowSelectionInterval(0,0);
-            }
-            choicesDialog.setVisible(items.size() > 0);
-        } else {
-            choicesDialog.setVisible(false);
+        tableModel.replace(items);
+        double x = owner.getX() + textComponent.getX() + 60;
+        double y = owner.getY() + textComponent.getY() + 80;
+        choicesDialog.setLocation((int)x, (int)y);
+        if (items.size() > 0) {
+            choicesList.setRowSelectionInterval(0,0);
         }
+        choicesDialog.setVisible(items.size() > 0);
     }
 
     public void addSuggestorItemListener(SuggesterItemListener<T> suggesterItemListener) {
@@ -184,13 +177,10 @@ public class Suggestor<T>
                     int index = this.choicesList.getSelectedRow();
                     if (index >= 0) {
                         T item = tableModel.get(index);
-//                        SuggestorLogic.SearchRange range = logic.getSearchRange(textComponent.getText(),
-//                                textComponent.getCaretPosition());
-//                        textComponent.replaceRange(" <" + extractor.extract(item) + ">",
-//                                range.getReplaceFrom(), range.getReplaceTo());
                         for (SuggesterItemListener<T> sl : suggesterItemListeners) {
                             sl.itemFound(item);
                         }
+                        this.textComponent.setText("");
                         this.choicesDialog.setVisible(false);
                         e.consume();
                     }
