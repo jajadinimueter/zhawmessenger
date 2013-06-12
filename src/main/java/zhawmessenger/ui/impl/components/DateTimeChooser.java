@@ -58,6 +58,11 @@ public class DateTimeChooser extends JPanel {
     }
 
     public Date getDate() {
+        if (dateChooser.getDate() == null
+                || spinnerModel.getDate() == null) {
+            return null;
+        }
+
         Calendar timeCal = Calendar.getInstance();
         timeCal.setTime(spinnerModel.getDate());
 

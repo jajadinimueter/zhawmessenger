@@ -25,6 +25,11 @@ public class ConsolePanel extends JPanel implements SentMessageLogger {
                 BorderLayout.CENTER);
     }
 
+    public void logReminder(Message message) {
+        this.logTextArea.insert(String.format("Reminder noticed: %s\n", message), 0);
+        this.logTextArea.setCaretPosition(0);
+    }
+
     @Override
     public void log(Message message, Date sendAt) {
         this.logTextArea.insert(String.format("Message sent: %s\n", message), 0);

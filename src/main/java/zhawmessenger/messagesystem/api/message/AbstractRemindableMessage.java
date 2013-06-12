@@ -17,9 +17,20 @@ public abstract class AbstractRemindableMessage<R extends Contact>
         extends AbstractMessage<R> implements Remindable<R> {
 
     private Date reminderDate;
+    private boolean sent = false;
 
     public AbstractRemindableMessage(Object id) {
         super(id);
+    }
+
+    @Override
+    public boolean isReminderSent() {
+        return sent;
+    }
+
+    @Override
+    public void setReminderSent(boolean sent) {
+        this.sent = true;
     }
 
     @Override

@@ -12,4 +12,8 @@ public interface Remindable<R extends ContactProvider> {
     void setReminderDate(Date date);
 
     Date getReminderDate();
+
+    void setReminderSent(boolean sent);
+
+    boolean isReminderSent();
 }

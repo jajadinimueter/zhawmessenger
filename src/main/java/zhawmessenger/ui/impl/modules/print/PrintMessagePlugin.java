@@ -5,6 +5,7 @@ import zhawmessenger.messagesystem.api.message.MessageFactory;
 import zhawmessenger.messagesystem.api.modules.print.message.PrintJob;
 import zhawmessenger.messagesystem.api.modules.print.persistance.PrinterRepository;
 import zhawmessenger.messagesystem.impl.modules.print.message.PrintJobnImpl;
+import zhawmessenger.ui.SimpleMessageFormatter;
 import zhawmessenger.ui.api.*;
 import zhawmessenger.ui.api.form.DefaultSavableForm;
 import zhawmessenger.ui.api.form.MessageFormFactory;
@@ -14,6 +15,7 @@ import zhawmessenger.ui.api.util.DefaultMessageWindowFactory;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 /**
@@ -49,7 +51,7 @@ public class PrintMessagePlugin
 
     @Override
     public ItemFormatter<PrintJob> getPreviewFormatter() {
-        return null;  // FIXME
+        return new SimpleMessageFormatter<PrintJob>(getName());
     }
 
     @Override

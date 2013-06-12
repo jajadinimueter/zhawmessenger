@@ -5,6 +5,8 @@ import zhawmessenger.messagesystem.api.queue.MessageQueue;
 import zhawmessenger.messagesystem.api.queue.NotSentException;
 import zhawmessenger.messagesystem.api.queue.QueueChangeListener;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
+import zhawmessenger.messagesystem.api.remind.Remindable;
+import zhawmessenger.messagesystem.api.remind.ReminderListener;
 import zhawmessenger.messagesystem.api.transport.SentMessage;
 import zhawmessenger.messagesystem.api.transport.Transport;
 import zhawmessenger.messagesystem.api.queue.persistance.QueueRepository;
@@ -22,6 +24,7 @@ public class MessageQueueImpl implements MessageQueue {
     private final List<Transport> transports;
     private final TimeProvider timeProvider;
     private final QueueRepository repository;
+    private final List<ReminderListener> reminderListeners;
     private final List<QueueChangeListener> queueChangeListeners;
 
     public MessageQueueImpl(List<Transport> transports,
@@ -29,6 +32,7 @@ public class MessageQueueImpl implements MessageQueue {
                             QueueRepository repository) {
 
         this.queueChangeListeners = new ArrayList<QueueChangeListener>();
+        this.reminderListeners = new ArrayList<ReminderListener>();
         this.repository = repository;
         this.transports = transports;
         this.timeProvider = timeProvider;
@@ -109,8 +113,35 @@ public class MessageQueueImpl implements MessageQueue {
     }
 
     private boolean shouldBeSent(QueuedMessage message) {
-        return message.getMessage().getSendDate().getTime()
+        if (message.getMessage().getSendDate() == null) {
+            return true;
+        } else {
+            return message.getMessage().getSendDate().getTime()
                     < this.timeProvider.getTime();
+        }
+    }
+
+    @Override
+    public void addReminderListener(ReminderListener listener) {
+        reminderListeners.add(listener);
+    }
+
+    private void noticeReminder(QueuedMessage message) {
+        Object msg = message.getMessage();
+        if (msg instanceof Remindable) {
+            Message m = (Message) msg;
+            Remindable r = (Remindable) msg;
+            if (!r.isReminderSent() && r.getReminderDate() != null) {
+                if (!message.isSuspended()) {
+                    if (r.getReminderDate().getTime() <= timeProvider.getTime()) {
+                        for (ReminderListener l : reminderListeners) {
+                            l.remind((Message) msg);
+                            r.setReminderSent(true);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -118,6 +149,8 @@ public class MessageQueueImpl implements MessageQueue {
      */
     public void sendAll(boolean force) {
         for (QueuedMessage queuedMessage : getMessages()) {
+            // send reminders
+            noticeReminder(queuedMessage);
             if (canBeSent(queuedMessage) && shouldBeSent(queuedMessage)) {
                 this.send(queuedMessage.getMessage(), force);
             }

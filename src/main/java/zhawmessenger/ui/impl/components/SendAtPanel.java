@@ -5,6 +5,8 @@ import zhawmessenger.ui.api.formbuilder.FormBuilderConstraints;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.util.Date;
 
@@ -24,17 +26,36 @@ public class SendAtPanel extends AbstractDatePanel {
         // send at
         FormBuilder sendAtBuilder = new FormBuilder();
         sendImmediately = sendAtBuilder.addField(
-                new JCheckBox("Sofort"),
+                new JCheckBox("Sofort", true),
                 leftAlign);
+
         sendAtChooser = sendAtBuilder.addField(
-                ComponentFactory.buildDatePanel(new Date()));
+                ComponentFactory.buildDatePanel(null));
+
+        sendImmediately.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                changeEnabled();
+            }
+        });
+
+        changeEnabled();
 
         builder.addComponent(new JLabel("Versenden am"), sendAtBuilder.getPanel());
 
         this.setBorder(new LineBorder(Color.LIGHT_GRAY));
     }
 
+    private void changeEnabled() {
+        for (Component c : sendAtChooser.getComponents()) {
+            c.setEnabled(!sendImmediately.isSelected());
+        }
+    }
+
     public void setDate(Date date) {
+        if ( date != null)
+            sendImmediately.setSelected(false);
+
         sendAtChooser.setDate(date);
     }
 

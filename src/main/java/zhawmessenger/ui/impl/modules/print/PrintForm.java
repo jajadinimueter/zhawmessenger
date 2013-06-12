@@ -6,10 +6,14 @@ import zhawmessenger.messagesystem.api.modules.print.message.PrintJob;
 import zhawmessenger.messagesystem.api.modules.print.persistance.PrinterRepository;
 import zhawmessenger.messagesystem.api.util.Finder;
 import zhawmessenger.ui.api.form.MessageForm;
+import zhawmessenger.ui.api.form.validator.CompoundValidator;
+import zhawmessenger.ui.api.form.validator.TextFieldRequiredValidator;
 import zhawmessenger.ui.api.formbuilder.FormBuilder;
 import zhawmessenger.ui.impl.components.ReceiverTextArea;
 import zhawmessenger.ui.impl.components.SendAtPanel;
 import zhawmessenger.ui.impl.components.StopperGridBagConstraintsChanger;
+import zhawmessenger.ui.impl.validator.DatePanelValidator;
+import zhawmessenger.ui.impl.validator.ReceiverRequiredValidator;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -28,6 +32,7 @@ public class PrintForm
     private final PrinterRepository printerRepository;
     private final Finder<String, DisplayableContactProvider> printerFinder;
 
+    private CompoundValidator validator;
     private JTextArea text;
     private SendAtPanel sendAtPanel;
     private ReceiverTextArea receiverField;
@@ -36,6 +41,7 @@ public class PrintForm
                         final PrintJob message,
                         final PrinterRepository printerRepository) {
         super(owner, message);
+        validator = new CompoundValidator();
         this.printerRepository = printerRepository;
         this.printerFinder = new Finder<String, DisplayableContactProvider>() {
             @Override
@@ -61,11 +67,20 @@ public class PrintForm
 
         receiverField.setBorder(new LineBorder(Color.GRAY));
 
+        validator.addValidator(new ReceiverRequiredValidator(receiverField));
+
         text = new JTextArea(1, 1);
         builder.addField(new JScrollPane(text),
                 new StopperGridBagConstraintsChanger());
 
+        validator.addValidator(new TextFieldRequiredValidator(text));
+
         sendAtPanel = builder.addField(new SendAtPanel());
+    }
+
+    @Override
+    public boolean validateFields() {
+        return validator.validate();
     }
 
     @Override

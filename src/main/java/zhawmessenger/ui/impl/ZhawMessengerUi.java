@@ -5,6 +5,7 @@ import zhawmessenger.messagesystem.api.message.Message;
 import zhawmessenger.messagesystem.api.persistance.SearchableRepository;
 import zhawmessenger.messagesystem.api.queue.MessageQueue;
 import zhawmessenger.messagesystem.api.queue.QueuedMessage;
+import zhawmessenger.messagesystem.api.remind.ReminderListener;
 import zhawmessenger.messagesystem.api.transport.Transport;
 import zhawmessenger.messagesystem.impl.modules.email.transport.FakeEmailTransportImpl;
 import zhawmessenger.messagesystem.impl.modules.mobilephone.transport.FakeMobilePhoneTransport;
@@ -27,6 +28,8 @@ import zhawmessenger.ui.impl.modules.sms.SmsMessagePlugin;
 import zhawmessenger.ui.impl.queue.QueueTableModel;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -72,6 +75,7 @@ public class ZhawMessengerUi {
         savableForm.addSaveListener(new SaveListener() {
             @Override
             public void saved(Message message) {
+                win.dispose();
                 if (message == null) {
                     throw new RuntimeException("Message cannot be null");
                 }
@@ -148,18 +152,6 @@ public class ZhawMessengerUi {
             }
         });
 
-        final JButton sendNowButton = new JButton("Sofort versenden");
-        sendNowButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int selRow = messageTable.getSelectedRow();
-                if (selRow >= 0) {
-                    QueuedMessage msg = messageQueue.getQueuedMessages().get(selRow);
-                    messageQueue.send(msg.getMessage());
-                }
-            }
-        });
-
         final JButton deleteButton = new JButton("Delete");
         deleteButton.addActionListener(new ActionListener() {
             @Override
@@ -173,7 +165,6 @@ public class ZhawMessengerUi {
         });
 
         mainToolbar.add(editButton);
-        mainToolbar.add(sendNowButton);
         mainToolbar.add(deleteButton);
 
         mainPanel.add(mainToolbar, BorderLayout.NORTH);
@@ -240,6 +231,13 @@ public class ZhawMessengerUi {
         scheduler.startSchedule(queue);
 
         final ZhawMessengerUi messengerUi = new ZhawMessengerUi(plugins, queue);
+
+        queue.addReminderListener(new ReminderListener() {
+            @Override
+            public void remind(Message message) {
+                consolePanel.logReminder(message);
+            }
+        });
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override

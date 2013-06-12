@@ -145,11 +145,9 @@ public class EmailFormFactory
 
             sendAtPanel = builder.addField(new SendAtPanel());
             sendAtPanel.setDate(message.getSendDate());
-            validator.addValidator(new DatePanelValidator(sendAtPanel));
 
             remindAtPanel = builder.addField(new RemindAtPanel());
             remindAtPanel.setDate(message.getReminderDate());
-            validator.addValidator(new DatePanelValidator(remindAtPanel));
         }
 
         @Override

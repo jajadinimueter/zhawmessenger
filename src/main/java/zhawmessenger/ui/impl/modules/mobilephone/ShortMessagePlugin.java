@@ -2,7 +2,9 @@ package zhawmessenger.ui.impl.modules.mobilephone;
 
 import zhawmessenger.messagesystem.api.contact.DisplayableContactProvider;
 import zhawmessenger.messagesystem.api.modules.mobilephone.message.ShortMessage;
+import zhawmessenger.messagesystem.api.modules.print.message.PrintJob;
 import zhawmessenger.messagesystem.api.persistance.SearchableRepository;
+import zhawmessenger.ui.SimpleMessageFormatter;
 import zhawmessenger.ui.api.ItemFormatter;
 import zhawmessenger.ui.api.plugin.MessagePlugin;
 
@@ -31,15 +33,7 @@ public abstract class ShortMessagePlugin<T extends ShortMessage> implements Mess
 
     @Override
     public ItemFormatter<T> getPreviewFormatter() {
-        return new ItemFormatter<T>() {
-            @Override
-            public String format(T message) {
-                return "<html>" +
-                        "<b>" + getName() + "</b><br>"
-                        + message.getText() +
-                        "</html>";
-            }
-        };
+        return new SimpleMessageFormatter<T>(getName());
     }
 
 }

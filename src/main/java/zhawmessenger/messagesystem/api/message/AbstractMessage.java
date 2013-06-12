@@ -20,13 +20,11 @@ public abstract class AbstractMessage<R extends Contact>
 
     private final List<DisplayableContactProvider> contactProviders
             = new ArrayList<DisplayableContactProvider>();
-    private final List<R> receivers = new ArrayList<R>();
 
     protected abstract Class<R> getContactClass();
 
     public AbstractMessage(Object id) {
         super(id);
-        sendTime = new Date();
     }
 
     @Override
