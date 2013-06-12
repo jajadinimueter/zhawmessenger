@@ -20,6 +20,10 @@ public abstract class MessageForm<T extends Message> extends JPanel {
         this.owner = owner;
     }
 
+    public boolean validateFields() {
+        return true;
+    }
+
     public abstract T getMessage();
 
     public abstract T getSavedMessage();

@@ -19,11 +19,11 @@ public class SmsForm extends ShortMessageForm<Sms> {
 
     @Override
     public Sms getMessage() {
-        return null;  // FIXME
+        return super.getMessage();
     }
 
     @Override
     public Sms getSavedMessage() {
-        return null;  // FIXME
+        return super.getSavedMessage();
     }
 }

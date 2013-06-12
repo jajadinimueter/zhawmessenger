@@ -50,8 +50,10 @@ public class ReceiverTextArea extends JPanel {
         }
 
         public void addContact(DisplayableContactProvider contact) {
-            this.contacts.add(contact);
-            this.fireTableDataChanged();
+            if (!this.contacts.contains(contact)) {
+                this.contacts.add(contact);
+                this.fireTableDataChanged();
+            }
         }
 
         @Override

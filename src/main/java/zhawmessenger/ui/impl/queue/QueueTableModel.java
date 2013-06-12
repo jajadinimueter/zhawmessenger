@@ -8,28 +8,45 @@ import zhawmessenger.ui.api.ItemFormatter;
 import zhawmessenger.ui.api.plugin.MessagePlugin;
 
 import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  */
 public class QueueTableModel extends AbstractTableModel {
     private final MessageQueue messageQueue;
+    private final List<QueuedMessage> messages;
     private final List<MessagePlugin> messagePlugins;
 
     public QueueTableModel(MessageQueue messageQueue, List<MessagePlugin> plugins) {
         this.messageQueue = messageQueue;
+        this.messages = new ArrayList<QueuedMessage>();
+        addQueueMessages();
         this.messagePlugins = plugins;
         messageQueue.addQueueChangeListener(new QueueChangeListener() {
             @Override
             public void queueChanged(MessageQueue queue) {
-                fireTableDataChanged();
+                addQueueMessages();
             }
         });
     }
 
+    private void addQueueMessages() {
+        messages.clear();
+        for (QueuedMessage message : messageQueue.getQueuedMessages()) {
+            messages.add(message);
+        }
+        this.fireTableDataChanged();
+    }
+
+    public List<QueuedMessage> getMessages() {
+        return messages;
+    }
+
     @Override
     public int getRowCount() {
-        return this.messageQueue.getQueuedMessages().size();
+        return messages.size();
     }
 
     @Override
@@ -52,7 +69,7 @@ public class QueueTableModel extends AbstractTableModel {
     @SuppressWarnings("unchecked")
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        QueuedMessage m = this.messageQueue.getQueuedMessages().get(rowIndex);
+        QueuedMessage m = messages.get(rowIndex);
 
         ItemFormatter<Message> formatter = new ItemFormatter<Message>() {
             @Override

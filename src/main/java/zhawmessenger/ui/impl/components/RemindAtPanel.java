@@ -9,7 +9,7 @@ import java.util.Date;
 
 /**
  */
-public class RemindAtPanel extends JPanel {
+public class RemindAtPanel extends AbstractDatePanel {
     private JCheckBox noReminder;
     private DateTimeChooser remindDateChooser;
 

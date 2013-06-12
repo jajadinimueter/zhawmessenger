@@ -100,7 +100,7 @@ public class UglyContactsCreationFactory {
         aeinstein.addEmailContact(aeinsteinEmail);
         bgreen.addEmailContact(bgreenEmail);
 
-
+        fmueller.addMobilePhoneContact(fmuellerMobilePhone);
 
         emailContactRepository = new MemoryEmailContactRepository(Arrays.asList(
                 aeinsteinEmail,

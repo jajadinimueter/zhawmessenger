@@ -29,6 +29,7 @@ public class PrintForm
     private final Finder<String, DisplayableContactProvider> printerFinder;
 
     private JTextArea text;
+    private SendAtPanel sendAtPanel;
     private ReceiverTextArea receiverField;
 
     protected PrintForm(final Window owner,
@@ -64,7 +65,7 @@ public class PrintForm
         builder.addField(new JScrollPane(text),
                 new StopperGridBagConstraintsChanger());
 
-        builder.addField(new SendAtPanel());
+        sendAtPanel = builder.addField(new SendAtPanel());
     }
 
     @Override
@@ -78,6 +79,7 @@ public class PrintForm
         for (DisplayableContactProvider dp : receiverField.getContactProviders()) {
             message.addContactProvider(dp);
         }
+        message.setSendDate(sendAtPanel.getDate());
         return message;
     }
 }

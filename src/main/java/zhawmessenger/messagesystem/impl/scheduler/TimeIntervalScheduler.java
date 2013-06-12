@@ -51,11 +51,7 @@ public class TimeIntervalScheduler implements Scheduler {
 
         @Override
         public void run() {
-            try {
-                this.schedulable.schedule();
-            } catch (RuntimeException e) {
-                System.out.println("There was a problem in the schedulable");
-            }
+            this.schedulable.schedule();
         }
     }
 }

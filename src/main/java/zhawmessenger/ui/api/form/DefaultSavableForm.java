@@ -64,8 +64,10 @@ public class DefaultSavableForm<T extends Message>
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for (SaveListener listener : saveListeners) {
-                    listener.saved(formPanel.getSavedMessage());
+                if ( formPanel.validateFields() ) {
+                    for (SaveListener listener : saveListeners) {
+                        listener.saved(formPanel.getSavedMessage());
+                    }
                 }
             }
         });

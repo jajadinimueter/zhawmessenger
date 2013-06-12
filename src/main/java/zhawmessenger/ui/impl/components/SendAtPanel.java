@@ -4,12 +4,13 @@ import zhawmessenger.ui.api.formbuilder.FormBuilder;
 import zhawmessenger.ui.api.formbuilder.FormBuilderConstraints;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.util.Date;
 
 /**
  */
-public class SendAtPanel extends JPanel {
+public class SendAtPanel extends AbstractDatePanel {
     private JCheckBox sendImmediately;
     private DateTimeChooser sendAtChooser;
 
@@ -27,7 +28,10 @@ public class SendAtPanel extends JPanel {
                 leftAlign);
         sendAtChooser = sendAtBuilder.addField(
                 ComponentFactory.buildDatePanel(new Date()));
+
         builder.addComponent(new JLabel("Versenden am"), sendAtBuilder.getPanel());
+
+        this.setBorder(new LineBorder(Color.LIGHT_GRAY));
     }
 
     public void setDate(Date date) {

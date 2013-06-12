@@ -12,11 +12,16 @@ import zhawmessenger.ui.api.*;
 import zhawmessenger.ui.api.form.DefaultSavableForm;
 import zhawmessenger.ui.api.form.MessageForm;
 import zhawmessenger.ui.api.form.SavableForm;
+import zhawmessenger.ui.api.form.validator.ComboBoxRequiredValidator;
+import zhawmessenger.ui.api.form.validator.CompoundValidator;
+import zhawmessenger.ui.api.form.validator.TextFieldRequiredValidator;
+import zhawmessenger.ui.api.validator.Validator;
 import zhawmessenger.ui.api.formbuilder.FormBuilder;
-import zhawmessenger.ui.api.formbuilder.FormBuilderConstraints;
 import zhawmessenger.ui.api.formbuilder.GridBagConstraintsChangerAdapter;
 import zhawmessenger.ui.impl.DefaultApplicationContext;
 import zhawmessenger.ui.impl.components.*;
+import zhawmessenger.ui.impl.validator.DatePanelValidator;
+import zhawmessenger.ui.impl.validator.ReceiverRequiredValidator;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -59,10 +64,12 @@ public class EmailFormFactory
         private JCheckBox sendImmediately;
         private JCheckBox noReminder;
         private DateTimeChooser remindDateChooser;
-
+        private CompoundValidator validator;
 
         public EmailForm(Window owner, Email message) {
             super(owner, message);
+
+            this.validator = new CompoundValidator();
 
             this.finders = new ArrayList<Finder<String, DisplayableContactProvider>>();
 
@@ -72,6 +79,11 @@ public class EmailFormFactory
                     groupRepository, personRepository));
 
             this.buildForm();
+        }
+
+        @Override
+        public boolean validateFields() {
+            return validator.validate();
         }
 
         @Override
@@ -94,8 +106,8 @@ public class EmailFormFactory
             senderField = builder.addComponent(new JLabel("Absender"),
                     new SenderField<EmailContact>(
                             appContext.getUserLoggedIn().getEmailContacts()));
-
             senderField.getModel().setSelectedItem(message.getSender());
+            validator.addValidator(new ComboBoxRequiredValidator(senderField));
 
             receiverTextArea = builder.addComponent(new JLabel("Empfänger"),
                     new ReceiverTextArea(owner, finders),
@@ -116,30 +128,28 @@ public class EmailFormFactory
                     });
 
             receiverTextArea.setBorder(new LineBorder(Color.GRAY));
-
             receiverTextArea.setContactProviders(message.getContactProviders());
+
+            validator.addValidator(
+                    new ReceiverRequiredValidator(receiverTextArea));
 
             subjectField = builder.addComponent(new JLabel("Betreff"),
                     new JTextField());
-
             subjectField.setText(message.getText());
+            validator.addValidator(new TextFieldRequiredValidator(subjectField));
 
-            FormBuilderConstraints leftAlign = new FormBuilderConstraints(
-                    FormBuilderConstraints.Align.LEFT);
-
-            // text
             text = new JTextArea(1, 1);
             builder.addField(new JScrollPane(text), new StopperGridBagConstraintsChanger());
-
             text.setText(message.getText());
+            validator.addValidator(new TextFieldRequiredValidator(text));
 
             sendAtPanel = builder.addField(new SendAtPanel());
-
             sendAtPanel.setDate(message.getSendDate());
+            validator.addValidator(new DatePanelValidator(sendAtPanel));
 
             remindAtPanel = builder.addField(new RemindAtPanel());
-
             remindAtPanel.setDate(message.getReminderDate());
+            validator.addValidator(new DatePanelValidator(remindAtPanel));
         }
 
         @Override

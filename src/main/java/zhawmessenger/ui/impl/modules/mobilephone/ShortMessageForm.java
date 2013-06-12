@@ -9,10 +9,7 @@ import zhawmessenger.ui.api.ApplicationContext;
 import zhawmessenger.ui.api.form.MessageForm;
 import zhawmessenger.ui.api.formbuilder.FormBuilder;
 import zhawmessenger.ui.impl.DefaultApplicationContext;
-import zhawmessenger.ui.impl.components.ReceiverTextArea;
-import zhawmessenger.ui.impl.components.SendAtPanel;
-import zhawmessenger.ui.impl.components.SenderField;
-import zhawmessenger.ui.impl.components.StopperGridBagConstraintsChanger;
+import zhawmessenger.ui.impl.components.*;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -30,6 +27,8 @@ public abstract class ShortMessageForm<T extends ShortMessage> extends MessageFo
     protected ReceiverTextArea receiverTextArea;
     protected SenderField<MobilePhoneContact> senderField;
     protected JTextArea text;
+    protected SendAtPanel sendAtPanel;
+    protected RemindAtPanel remindAtPanel;
 
     public ShortMessageForm(Window owner, T message,
                             boolean withMms, Finder<String, DisplayableContactProvider> finder) {
@@ -59,7 +58,8 @@ public abstract class ShortMessageForm<T extends ShortMessage> extends MessageFo
         builder.addField(new JScrollPane(text),
                 new StopperGridBagConstraintsChanger());
 
-        builder.addField(new SendAtPanel());
+        sendAtPanel = builder.addField(new SendAtPanel());
+        remindAtPanel = builder.addField(new RemindAtPanel());
     }
 
     @Override
@@ -70,7 +70,11 @@ public abstract class ShortMessageForm<T extends ShortMessage> extends MessageFo
     @Override
     public T getSavedMessage() {
         message.setText(text.getText());
+        for (DisplayableContactProvider cp : receiverTextArea.getContactProviders()) {
+            message.addContactProvider(cp);
+        }
+        message.setSendDate(sendAtPanel.getDate());
+        message.setReminderDate(remindAtPanel.getDate());
         return message;
-
     }
 }

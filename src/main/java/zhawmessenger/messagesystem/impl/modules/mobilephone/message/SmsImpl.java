@@ -3,6 +3,7 @@ package zhawmessenger.messagesystem.impl.modules.mobilephone.message;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import zhawmessenger.messagesystem.api.message.AbstractMessage;
+import zhawmessenger.messagesystem.api.message.AbstractRemindableMessage;
 import zhawmessenger.messagesystem.api.modules.mobilephone.contact.MobilePhoneContact;
 import zhawmessenger.messagesystem.api.modules.mobilephone.message.Sms;
 
@@ -12,12 +13,11 @@ import java.util.List;
 /**
  */
 public class SmsImpl
-        extends AbstractMessage<MobilePhoneContact> implements Sms {
+        extends AbstractRemindableMessage<MobilePhoneContact> implements Sms {
 
     @Override
     protected Class<MobilePhoneContact> getContactClass() {
         return MobilePhoneContact.class;
-
     }
 
     public SmsImpl(Object id) {

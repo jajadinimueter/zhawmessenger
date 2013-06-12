@@ -51,6 +51,11 @@ public class MobilePhoneContactImpl extends AbstractContact implements MobilePho
     }
 
     @Override
+    public String toString() {
+        return this.getValue();
+    }
+
+    @Override
     protected Class<? extends Contact> getContactClass() {
         return MobilePhoneContact.class;
     }

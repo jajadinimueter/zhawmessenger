@@ -111,7 +111,7 @@ public class ZhawMessengerUi {
         mainMenuBar = new JMenuBar();
 
         fileMenu = new JMenu("File");
-        createMessageMenu = new JMenu("Nachricht erstellen");
+        createMessageMenu = new JMenu("Neu");
 
         for (final MessagePlugin mp : messagePlugins) {
             Action createAction = new AbstractAction(mp.getName(), mp.getIcon()) {
@@ -135,18 +135,13 @@ public class ZhawMessengerUi {
         editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int selCol = messageTable.getSelectedColumn();
-                if ( selCol >= 0 ) {
-                    final QueuedMessage message = messageQueue.getQueuedMessages().get(selCol);
+                int selRow = messageTable.getSelectedRow();
+                if ( selRow >= 0 ) {
+                    final QueuedMessage message = tableModel.getMessages().get(selRow);
                     for (final MessagePlugin mp : messagePlugins) {
                         //noinspection unchecked
                         if (mp.doesHandle(message.getMessage().getClass())) {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    openMessage(mp, frame, message);
-                                }
-                            });
+                            openMessage(mp, frame, message);
                         }
                     }
                 }
@@ -157,9 +152,9 @@ public class ZhawMessengerUi {
         sendNowButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int selCol = messageTable.getSelectedColumn();
-                if (selCol >= 0) {
-                    QueuedMessage msg = messageQueue.getQueuedMessages().get(selCol);
+                int selRow = messageTable.getSelectedRow();
+                if (selRow >= 0) {
+                    QueuedMessage msg = messageQueue.getQueuedMessages().get(selRow);
                     messageQueue.send(msg.getMessage());
                 }
             }
@@ -169,9 +164,9 @@ public class ZhawMessengerUi {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int selCol = messageTable.getSelectedColumn();
-                if (selCol >= 0) {
-                    QueuedMessage queuedMessage = messageQueue.getQueuedMessages().get(selCol);
+                int selRow = messageTable.getSelectedRow();
+                if (selRow >= 0) {
+                    QueuedMessage queuedMessage = messageQueue.getQueuedMessages().get(selRow);
                     messageQueue.remove(queuedMessage.getMessage());
                 }
             }

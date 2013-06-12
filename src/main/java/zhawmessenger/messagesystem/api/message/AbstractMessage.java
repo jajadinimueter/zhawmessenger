@@ -26,6 +26,7 @@ public abstract class AbstractMessage<R extends Contact>
 
     public AbstractMessage(Object id) {
         super(id);
+        sendTime = new Date();
     }
 
     @Override

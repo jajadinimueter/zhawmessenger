@@ -1,13 +1,14 @@
 package zhawmessenger.messagesystem.impl.modules.mobilephone.message;
 
 import zhawmessenger.messagesystem.api.message.AbstractMessage;
+import zhawmessenger.messagesystem.api.message.AbstractRemindableMessage;
 import zhawmessenger.messagesystem.api.modules.mobilephone.contact.MobilePhoneContact;
 import zhawmessenger.messagesystem.api.modules.mobilephone.message.Mms;
 
 /**
  */
 public class MmsImpl
-        extends AbstractMessage<MobilePhoneContact>
+        extends AbstractRemindableMessage<MobilePhoneContact>
         implements Mms {
 
     @Override
