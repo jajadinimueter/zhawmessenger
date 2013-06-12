@@ -12,6 +12,7 @@ import java.util.Date;
 public class DateTimeChooser extends JPanel {
     private JDateChooser dateChooser;
     private SpinnerDateModel spinnerModel;
+    private JSpinner timeSpinner;
 
     public DateTimeChooser(Date value){
         this.setLayout(new GridBagLayout());
@@ -37,7 +38,7 @@ public class DateTimeChooser extends JPanel {
         this.add(dateChooser, gbc);
 
         spinnerModel = new SpinnerDateModel();
-        JSpinner timeSpinner = new JSpinner(spinnerModel);
+        timeSpinner = new JSpinner(spinnerModel);
         JComponent editor = new JSpinner.DateEditor(timeSpinner, "HH:mm:ss");
         timeSpinner.setEditor(editor);
         if(value != null) {
@@ -47,6 +48,13 @@ public class DateTimeChooser extends JPanel {
         gbc.gridx = 1;
         gbc.gridy = 0;
         this.add(timeSpinner, gbc);
+    }
+
+    public void setDate(Date date) {
+        if ( date != null ) {
+            dateChooser.setDate(date);
+            timeSpinner.setValue(date);
+        }
     }
 
     public Date getDate() {

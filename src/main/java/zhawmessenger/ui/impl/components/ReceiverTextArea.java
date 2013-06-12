@@ -13,6 +13,8 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,7 +36,11 @@ public class ReceiverTextArea extends JPanel {
         }
 
         public void setContacts(List<DisplayableContactProvider> contacts) {
-            this.contacts = contacts;
+            // have to copy the list
+            this.contacts.clear();
+            for (DisplayableContactProvider contact : contacts) {
+                this.contacts.add(contact);
+            }
             this.fireTableDataChanged();
         }
 
@@ -108,6 +114,10 @@ public class ReceiverTextArea extends JPanel {
 
         builder.addField(searchField);
         builder.addField(resultTable);
+    }
+
+    public void setContactProviders(List<DisplayableContactProvider> cp) {
+        receiverTableModel.setContacts(cp);
     }
 
     public List<DisplayableContactProvider> getContactProviders() {

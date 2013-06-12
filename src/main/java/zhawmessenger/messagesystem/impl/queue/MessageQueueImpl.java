@@ -12,7 +12,6 @@ import zhawmessenger.messagesystem.impl.util.DefaultTimeProvider;
 import zhawmessenger.messagesystem.impl.util.TimeProvider;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -110,7 +109,7 @@ public class MessageQueueImpl implements MessageQueue {
     }
 
     private boolean shouldBeSent(QueuedMessage message) {
-        return message.getMessage().getSendTime()
+        return message.getMessage().getSendDate().getTime()
                     < this.timeProvider.getTime();
     }
 

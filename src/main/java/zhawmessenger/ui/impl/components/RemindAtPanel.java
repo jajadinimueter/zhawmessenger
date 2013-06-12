@@ -9,36 +9,37 @@ import java.util.Date;
 
 /**
  */
-public class SendAtPanel extends JPanel {
-    private JCheckBox sendImmediately;
-    private DateTimeChooser sendAtChooser;
+public class RemindAtPanel extends JPanel {
+    private JCheckBox noReminder;
+    private DateTimeChooser remindDateChooser;
 
-    public SendAtPanel() {
+    public RemindAtPanel() {
         FormBuilder builder = new FormBuilder(
                 this, new Insets(3, 3, 3, 3), false);
 
         FormBuilderConstraints leftAlign = new FormBuilderConstraints(
                 FormBuilderConstraints.Align.LEFT);
 
-        // send at
-        FormBuilder sendAtBuilder = new FormBuilder();
-        sendImmediately = sendAtBuilder.addField(
-                new JCheckBox("Sofort"),
+        // reminder
+        FormBuilder remindAtBuilder = new FormBuilder();
+        noReminder = remindAtBuilder.addField(
+                new JCheckBox("Keine Erinnerung"),
                 leftAlign);
-        sendAtChooser = sendAtBuilder.addField(
+
+        remindDateChooser = remindAtBuilder.addField(
                 ComponentFactory.buildDatePanel(new Date()));
-        builder.addComponent(new JLabel("Versenden am"), sendAtBuilder.getPanel());
+        builder.addComponent(new JLabel("Erinnerung am"), remindAtBuilder.getPanel());
     }
 
     public void setDate(Date date) {
-        sendAtChooser.setDate(date);
+        remindDateChooser.setDate(date);
     }
 
     public Date getDate() {
-        if (sendImmediately.isSelected()) {
+        if (noReminder.isSelected()) {
             return null;
         } else {
-            return sendAtChooser.getDate();
+            return remindDateChooser.getDate();
         }
     }
 }

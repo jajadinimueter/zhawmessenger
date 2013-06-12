@@ -8,32 +8,27 @@ import zhawmessenger.messagesystem.api.remind.Reminder;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
  */
-public abstract class AbstractRemindableMessage<R extends EmailContact>
+public abstract class AbstractRemindableMessage<R extends Contact>
         extends AbstractMessage<R> implements Remindable<R> {
 
-    private final List<Reminder<R>> reminders;
+    private Date reminderDate;
 
     public AbstractRemindableMessage(Object id) {
         super(id);
-        reminders = new ArrayList<Reminder<R>>();
     }
 
     @Override
-    public void addReminder(Reminder<R> reminder) {
-        reminders.add(reminder);
+    public void setReminderDate(Date date) {
+        reminderDate = date;
     }
 
     @Override
-    public void removeReminder(Reminder<R> reminder) {
-        reminders.remove(reminder);
-    }
-
-    @Override
-    public List<Reminder<R>> getReminders() {
-        return Collections.unmodifiableList(reminders);
+    public Date getReminderDate() {
+        return reminderDate;
     }
 }

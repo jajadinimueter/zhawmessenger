@@ -92,8 +92,12 @@ public class QueuedMessageImpl implements QueuedMessage {
 
     @Override
     public boolean isSuspended() {
-        return this.suspended && !(this.timeSuspendedUntil
-                <timeProvider.getTime());
+        if (this.timeSuspendedUntil != 0) {
+            if (this.suspended) {
+                return timeProvider.getTime() < this.timeSuspendedUntil;
+            }
+        }
+        return this.suspended;
     }
 
     @Override

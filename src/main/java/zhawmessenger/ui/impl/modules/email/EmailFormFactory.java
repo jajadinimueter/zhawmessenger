@@ -1,6 +1,5 @@
 package zhawmessenger.ui.impl.modules.email;
 
-import zhawmessenger.messagesystem.api.contact.ContactProvider;
 import zhawmessenger.messagesystem.api.contact.DisplayableContactProvider;
 import zhawmessenger.messagesystem.api.modules.addressbook.persistance.GroupRepository;
 import zhawmessenger.messagesystem.api.modules.addressbook.persistance.PersonRepository;
@@ -50,6 +49,7 @@ public class EmailFormFactory
     class EmailForm extends MessageForm<Email> {
         private final ArrayList<Finder<String, DisplayableContactProvider>> finders;
 
+        private RemindAtPanel remindAtPanel;
         private SendAtPanel sendAtPanel;
         private ApplicationContext appContext;
         private JComboBox senderField;
@@ -76,11 +76,13 @@ public class EmailFormFactory
 
         @Override
         public Email getSavedMessage() {
-            message.setSender((EmailContact) senderField.getModel().getSelectedItem());
+            message.setSender((EmailContact)
+                    senderField.getModel().getSelectedItem());
             message.setText(text.getText());
-            message.setSendTime(sendAtPanel.getSendDate().getTime());
+            message.setSendDate(sendAtPanel.getDate());
             message.setSubject(subjectField.getText());
-            for (ContactProvider provider : receiverTextArea.getContactProviders()) {
+            message.clearContactProviders();
+            for (DisplayableContactProvider provider : receiverTextArea.getContactProviders()) {
                 message.addContactProvider(provider);
             }
             return message;
@@ -92,6 +94,8 @@ public class EmailFormFactory
             senderField = builder.addComponent(new JLabel("Absender"),
                     new SenderField<EmailContact>(
                             appContext.getUserLoggedIn().getEmailContacts()));
+
+            senderField.getModel().setSelectedItem(message.getSender());
 
             receiverTextArea = builder.addComponent(new JLabel("Empfänger"),
                     new ReceiverTextArea(owner, finders),
@@ -113,8 +117,12 @@ public class EmailFormFactory
 
             receiverTextArea.setBorder(new LineBorder(Color.GRAY));
 
+            receiverTextArea.setContactProviders(message.getContactProviders());
+
             subjectField = builder.addComponent(new JLabel("Betreff"),
                     new JTextField());
+
+            subjectField.setText(message.getText());
 
             FormBuilderConstraints leftAlign = new FormBuilderConstraints(
                     FormBuilderConstraints.Align.LEFT);
@@ -123,7 +131,15 @@ public class EmailFormFactory
             text = new JTextArea(1, 1);
             builder.addField(new JScrollPane(text), new StopperGridBagConstraintsChanger());
 
+            text.setText(message.getText());
+
             sendAtPanel = builder.addField(new SendAtPanel());
+
+            sendAtPanel.setDate(message.getSendDate());
+
+            remindAtPanel = builder.addField(new RemindAtPanel());
+
+            remindAtPanel.setDate(message.getReminderDate());
         }
 
         @Override

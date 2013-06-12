@@ -1,15 +1,14 @@
 package zhawmessenger.messagesystem.api.message;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import zhawmessenger.messagesystem.api.contact.Contact;
 import zhawmessenger.messagesystem.api.contact.ContactProvider;
-import zhawmessenger.messagesystem.api.modules.email.contact.EmailContact;
+import zhawmessenger.messagesystem.api.contact.DisplayableContactProvider;
 import zhawmessenger.messagesystem.api.persistance.AbstractIdObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.UUID;
+import java.util.Date;
 
 /**
  */
@@ -17,9 +16,10 @@ public abstract class AbstractMessage<R extends Contact>
         extends AbstractIdObject implements Message<R> {
 
     private String text;
-    private long sendTime;
+    private Date sendTime;
 
-    private final List<ContactProvider> contactProviders = new ArrayList<ContactProvider>();
+    private final List<DisplayableContactProvider> contactProviders
+            = new ArrayList<DisplayableContactProvider>();
     private final List<R> receivers = new ArrayList<R>();
 
     protected abstract Class<R> getContactClass();
@@ -29,11 +29,11 @@ public abstract class AbstractMessage<R extends Contact>
     }
 
     @Override
-    public long getSendTime() {
+    public Date getSendDate() {
         return this.sendTime;
     }
 
-    public void setSendTime(long time) {
+    public void setSendDate(Date time) {
         this.sendTime = time;
     }
 
@@ -48,13 +48,18 @@ public abstract class AbstractMessage<R extends Contact>
     }
 
     @Override
-    public void addContactProvider(ContactProvider provider) {
+    public void addContactProvider(DisplayableContactProvider provider) {
         contactProviders.add(provider);
     }
 
     @Override
-    public List<ContactProvider> getContactProviders() {
+    public List<DisplayableContactProvider> getContactProviders() {
         return contactProviders;
+    }
+
+    @Override
+    public void clearContactProviders() {
+        this.contactProviders.clear();
     }
 
     @Override

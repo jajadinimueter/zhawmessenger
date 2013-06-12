@@ -51,13 +51,22 @@ public class ZhawMessengerUi {
         openMessage(mp, owner, null);
     }
 
-    private void openMessage(MessagePlugin mp, JFrame owner, Message message) {
+    private void openMessage(MessagePlugin mp, JFrame owner, final QueuedMessage qm) {
         MessageWindowFactory windowFactory = mp.getWindowFactory();
         final Window win = windowFactory.createWindow(owner);
         MessageFormFactory factory = mp.getFormFactory();
+
+        Message message = null;
+
+        if (qm != null) {
+            qm.suspend();
+            message = qm.getMessage();
+        }
+
         if (message == null) {
             message = mp.getMessageFactory().createMessage();
         }
+
         //noinspection unchecked
         final SavableForm savableForm = factory.createForm(win, message);
         savableForm.addSaveListener(new SaveListener() {
@@ -66,13 +75,17 @@ public class ZhawMessengerUi {
                 if (message == null) {
                     throw new RuntimeException("Message cannot be null");
                 }
-                messageQueue.add(message);
+                QueuedMessage q = messageQueue.add(message);
+                q.resume();
             }
         });
         savableForm.addCancelListener(new CancelListener() {
             @Override
             public void canceled(Message message) {
                 win.dispose();
+                if (qm != null) {
+                    qm.resume();
+                }
             }
         });
         win.add(savableForm.getForm());
@@ -131,7 +144,7 @@ public class ZhawMessengerUi {
                             SwingUtilities.invokeLater(new Runnable() {
                                 @Override
                                 public void run() {
-                                    openMessage(mp, frame, message.getMessage());
+                                    openMessage(mp, frame, message);
                                 }
                             });
                         }
