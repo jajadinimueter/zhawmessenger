@@ -1,6 +1,5 @@
 package zhawmessenger.messagesystem.impl.modules.addressbook;
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import zhawmessenger.messagesystem.api.contact.Contact;
 import zhawmessenger.messagesystem.api.modules.addressbook.Person;
 import zhawmessenger.messagesystem.api.modules.auth.Principal;

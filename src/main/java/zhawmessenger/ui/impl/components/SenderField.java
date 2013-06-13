@@ -1,12 +1,12 @@
 package zhawmessenger.ui.impl.components;
 
-import com.sun.javaws.exceptions.JRESelectException;
-import zhawmessenger.messagesystem.api.contact.Contact;
-import zhawmessenger.messagesystem.api.util.Finder;
-
-import javax.swing.*;
 import java.util.Collection;
-import java.util.List;
+
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+
+import zhawmessenger.messagesystem.api.contact.Contact;
 
 /**
  */
